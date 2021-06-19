@@ -1,6 +1,8 @@
 package com.github.attebjorner.todo_app.model;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.Locale;
 
 public class Note
 {
@@ -10,15 +12,22 @@ public class Note
 
     private boolean isDone;
 
-    private Date deadline;
+    private LocalDate deadline;
 
     private Importance importance;
 
-    public Note(String description, Date deadline, Importance importance)
+    public Note(String description, LocalDate deadline, Importance importance)
     {
         this.description = description;
         this.isDone = false;
         this.deadline = deadline;
+        this.importance = importance;
+    }
+
+    public Note(String description, Importance importance)
+    {
+        this.description = description;
+        this.isDone = false;
         this.importance = importance;
     }
 
@@ -52,12 +61,12 @@ public class Note
         isDone = done;
     }
 
-    public Date getDeadline()
+    public LocalDate getDeadline()
     {
         return deadline;
     }
 
-    public void setDeadline(Date deadline)
+    public void setDeadline(LocalDate deadline)
     {
         this.deadline = deadline;
     }

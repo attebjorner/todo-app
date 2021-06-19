@@ -4,6 +4,6 @@
     <string name="importance_low">Низкий</string>
     <string name="importance_high">!! Высокий</string>
     <string name="my_tasks">Мои дела</string>
-    <string name="done">Выполнено — </string>
+    <string name="done">Выполнено — %1$d</string>
     <string name="add_new">Новое</string>
 </resources>

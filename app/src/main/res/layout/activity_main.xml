@@ -40,14 +40,15 @@
                 android:textSize="16sp" />
 
             <ImageButton
-                android:id="@+id/btnVisible"
+                android:id="@+id/imbVisible"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="24dp"
+                android:background="@color/back_primary"
                 android:gravity="top|end"
-                android:src="@drawable/ic_visibility"
-                android:background="@color/back_primary"/>
+                android:onClick="onClickVisibility"
+                android:src="@drawable/ic_visibility" />
 
         </RelativeLayout>
 
@@ -59,8 +60,9 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTodo"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp">
 
             </androidx.recyclerview.widget.RecyclerView>
