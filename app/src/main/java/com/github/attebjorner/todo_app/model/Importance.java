@@ -2,16 +2,18 @@ package com.github.attebjorner.todo_app.model;
 
 public enum Importance
 {
-    NO("Нет"), LOW("Низкий"), HIGH("!! Высокий");
+    NO(0),
+    LOW(1),
+    HIGH(2);
 
-    private String value;
+    private final int value;
 
-    private Importance(String value)
+    Importance(int value)
     {
         this.value = value;
     }
 
-    public String getValue()
+    public int getValue()
     {
         return value;
     }

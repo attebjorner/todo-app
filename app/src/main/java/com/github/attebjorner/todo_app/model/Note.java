@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Note
 {
-    private String title;
+    private long id;
 
     private String description;
 
@@ -14,23 +14,22 @@ public class Note
 
     private Importance importance;
 
-    public Note(String title, String description, boolean isDone, Date deadline, Importance importance)
+    public Note(String description, Date deadline, Importance importance)
     {
-        this.title = title;
         this.description = description;
-        this.isDone = isDone;
+        this.isDone = false;
         this.deadline = deadline;
         this.importance = importance;
     }
 
-    public String getTitle()
+    public long getId()
     {
-        return title;
+        return id;
     }
 
-    public void setTitle(String title)
+    public void setId(long id)
     {
-        this.title = title;
+        this.id = id;
     }
 
     public String getDescription()

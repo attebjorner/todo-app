@@ -6,6 +6,9 @@ import android.os.Bundle;
 
 import com.github.attebjorner.todo_app.R;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
 {
     @Override
@@ -13,5 +16,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
     }
 }
