@@ -33,10 +33,18 @@ public class MainActivity extends AppCompatActivity
         Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO);
         doneLongNote.setDone(true);
         notes = Arrays.asList(
-                new Note("note 1", Importance.LOW),
+                new Note("2 + -", LocalDate.of(2021, 10, 1), Importance.HIGH),
+                new Note("2 + -", LocalDate.of(2021, 10, 4), Importance.HIGH),
+                new Note("1 + -", LocalDate.of(2021, 10, 2), Importance.LOW),
+                new Note("1 + -", LocalDate.of(2021, 10, 5), Importance.LOW),
+                new Note("0 + -", LocalDate.of(2021, 10, 3), Importance.NO),
+                new Note("0 + -", LocalDate.of(2021, 10, 6), Importance.NO),
+                new Note("2 - -", Importance.HIGH),
+                new Note("1 - -", Importance.LOW),
+                new Note("0 - -", Importance.NO),
                 new Note("nte 3", LocalDate.now(), Importance.NO),
                 doneLongNote,
-                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.now(), Importance.HIGH)
+                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2021, 10, 12), Importance.HIGH)
         );
     }
 
@@ -60,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         TextView tvDone = (TextView) findViewById(R.id.tvDoneCounter);
         tvDone.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
 
+        sortNotesList();
         initRecyclerView();
     }
 
@@ -86,6 +95,7 @@ public class MainActivity extends AppCompatActivity
         ));
     }
 
+//    сортирую чтобы первее был дедлайн, потом -- важность
     private void sortNotesList()
     {
         notes = notes.stream().sorted((o1, o2) ->
@@ -95,8 +105,14 @@ public class MainActivity extends AppCompatActivity
             return 0;
         }).sorted((o1, o2) ->
         {
-            if (o1.getDeadline().isBefore(o2.getDeadline())) return 1;
-            else if (o1.getDeadline().isAfter(o2.getDeadline())) return -1;
+            if (o1.getDeadline() == null || o2.getDeadline() == null)
+            {
+                if (o1.getDeadline() == null && o2.getDeadline() == null) return 0;
+                else if (o1.getDeadline() == null) return 1;
+                return -1;
+            }
+            else if (o1.getDeadline().isBefore(o2.getDeadline())) return -1;
+            else if (o1.getDeadline().isAfter(o2.getDeadline())) return 1;
             return 0;
         }).collect(Collectors.toList());
     }

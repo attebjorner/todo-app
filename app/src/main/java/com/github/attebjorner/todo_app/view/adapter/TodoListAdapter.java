@@ -38,27 +38,38 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull TodoListAdapter.ViewHolder holder, int position)
     {
-        holder.tvDescription.setText(notes.get(position).getDescription());
-        if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
-        else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
-        if (notes.get(position).isDone())
+        if (position == notes.size())
         {
-            holder.imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
+            holder.tvDescription.setText(R.string.add_new);
             holder.tvDescription.setTextColor(0x4D000000);
-            holder.tvDescription.setPaintFlags(
-                    holder.tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-            );
+            holder.tvDeadline.setVisibility(View.GONE);
+            holder.imbCheckbox.setVisibility(View.INVISIBLE);
+            holder.imbInfo.setVisibility(View.GONE);
         }
-        else if (notes.get(position).getImportance() == Importance.HIGH)
+        else
         {
-            holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
+            holder.tvDescription.setText(notes.get(position).getDescription());
+            if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
+            else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
+            if (notes.get(position).isDone())
+            {
+                holder.imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
+                holder.tvDescription.setTextColor(0x4D000000);
+                holder.tvDescription.setPaintFlags(
+                        holder.tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
+                );
+            }
+            else if (notes.get(position).getImportance() == Importance.HIGH)
+            {
+                holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
+            }
         }
     }
 
     @Override
     public int getItemCount()
     {
-        return notes.size();
+        return notes.size() + 1;
     }
 
     public final static class ViewHolder extends RecyclerView.ViewHolder
