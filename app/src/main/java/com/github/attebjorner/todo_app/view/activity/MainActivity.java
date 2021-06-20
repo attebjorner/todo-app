@@ -5,6 +5,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -86,6 +87,12 @@ public class MainActivity extends AppCompatActivity
         showDone = !showDone;
         tinyDB.putBoolean("showDone", showDone);
         initRecyclerView();
+    }
+
+    public void onClickCreateNote(View view)
+    {
+        Intent intent = new Intent(this, CreateNoteActivity.class);
+        startActivity(intent);
     }
 
     private void initRecyclerView()

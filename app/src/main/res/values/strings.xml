@@ -7,4 +7,12 @@
     <string name="done">Выполнено — %1$d</string>
     <string name="add_new">Новое</string>
     <string name="save">Сохранить</string>
+    <string name="importance">Важность</string>
+    <string name="do_before">Сделать до</string>
+    <string name="delete">Удалить</string>
+    <string-array name="spinImportance">
+        <item>Нет</item>
+        <item>Низкий</item>
+        <item>!! Высокий</item>
+    </string-array>
 </resources>
