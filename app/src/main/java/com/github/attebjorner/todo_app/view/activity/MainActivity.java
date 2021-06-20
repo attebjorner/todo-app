@@ -1,11 +1,13 @@
 package com.github.attebjorner.todo_app.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -13,6 +15,7 @@ import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
+import com.github.attebjorner.todo_app.view.RecyclerViewReadyCallback;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
@@ -33,15 +36,19 @@ public class MainActivity extends AppCompatActivity
         Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO);
         doneLongNote.setDone(true);
         notes = Arrays.asList(
-                new Note("2 + -", LocalDate.of(2021, 10, 1), Importance.HIGH),
-                new Note("2 + -", LocalDate.of(2021, 10, 4), Importance.HIGH),
-                new Note("1 + -", LocalDate.of(2021, 10, 2), Importance.LOW),
-                new Note("1 + -", LocalDate.of(2021, 10, 5), Importance.LOW),
-                new Note("0 + -", LocalDate.of(2021, 10, 3), Importance.NO),
-                new Note("0 + -", LocalDate.of(2021, 10, 6), Importance.NO),
-                new Note("2 - -", Importance.HIGH),
-                new Note("1 - -", Importance.LOW),
-                new Note("0 - -", Importance.NO),
+                new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
+                new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
+                new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
+                new Note("1+-", LocalDate.of(2021, 10, 5), Importance.LOW),
+                new Note("0+-", LocalDate.of(2021, 10, 3), Importance.NO),
+                new Note("0+-", LocalDate.of(2021, 10, 6), Importance.NO),
+                new Note("2--", Importance.HIGH),
+                new Note("1--", Importance.LOW),
+                new Note("0--", Importance.NO),
+                new Note("2--", Importance.HIGH),
+                new Note("1--", Importance.LOW),
+                new Note("0--", Importance.NO),
+                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO),
                 new Note("nte 3", LocalDate.now(), Importance.NO),
                 doneLongNote,
                 new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2021, 10, 12), Importance.HIGH)
@@ -83,16 +90,42 @@ public class MainActivity extends AppCompatActivity
 
     private void initRecyclerView()
     {
+        CardView cvTodo = (CardView) findViewById(R.id.cvTodo);
         RecyclerView rvTodo = (RecyclerView) findViewById(R.id.rvTodo);
         LinearLayoutManager llManager = new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false
         );
         rvTodo.setLayoutManager(llManager);
-        rvTodo.setAdapter(new TodoListAdapter(
+        TodoListAdapter adapter = new TodoListAdapter(
                 showDone ? notes : notes.stream()
                         .filter(x -> !x.isDone())
                         .collect(Collectors.toList())
-        ));
+        );
+        rvTodo.setAdapter(adapter);
+
+        RecyclerViewReadyCallback recyclerViewReadyCallback;
+
+        recyclerViewReadyCallback = () ->
+        {
+            rvTodo.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            int b = rvTodo.getMeasuredWidth();
+            cvTodo.getLayoutParams().height = 2000;
+            cvTodo.getLayoutParams().width = b;
+            cvTodo.requestLayout();
+            rvTodo.getLayoutParams().height = 2000;
+            rvTodo.getLayoutParams().width = b;
+            rvTodo.requestLayout();
+        };
+
+        rvTodo.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (recyclerViewReadyCallback != null) {
+                    recyclerViewReadyCallback.onLayoutReady();
+                }
+                rvTodo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
 //    сортирую чтобы первее был дедлайн, потом -- важность
