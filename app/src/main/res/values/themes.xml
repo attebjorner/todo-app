@@ -12,4 +12,15 @@
         <item name="android:statusBarColor">@color/back_primary</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <style name="DateSwitch" parent="Theme.AppCompat.Light">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">#007AFF</item>
+
+        <!-- inactive thumb color -->
+<!--        <item name="colorSwitchThumbNormal">#FFFFFF</item>-->
+
+<!--        &lt;!&ndash; inactive track color (30% transparency) &ndash;&gt;-->
+<!--        <item name="android:colorForeground">#0F000000</item>-->
+    </style>
 </resources>

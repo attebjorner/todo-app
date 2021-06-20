@@ -1,6 +1,8 @@
 package com.github.attebjorner.todo_app.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.View;
@@ -8,31 +10,29 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.github.attebjorner.todo_app.R;
+import com.github.attebjorner.todo_app.view.CreateNoteFragment;
 
 public class CreateNoteActivity extends AppCompatActivity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_note);
 
-        setImportanceSpinner();
-    }
-
-    private void setImportanceSpinner()
-    {
-        Spinner spinner = (Spinner) findViewById(R.id.spinImportance);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.spinImportance, android.R.layout.simple_spinner_item
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        setFragment();
     }
 
     public void onClickBack(View view)
     {
         onBackPressed();
+    }
+
+    private void setFragment()
+    {
+        Fragment fragment = new CreateNoteFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, fragment);
+        ft.commit();
     }
 }

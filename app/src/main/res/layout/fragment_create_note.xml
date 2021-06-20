@@ -43,7 +43,7 @@
 
         <Spinner
             android:id="@+id/spinImportance"
-            android:layout_width="match_parent"
+            android:layout_width="140dp"
             android:layout_height="21dp" />
     </LinearLayout>
 
@@ -78,11 +78,12 @@
             android:textSize="14sp"
             android:textColor="@color/blue" />
 
-        <Switch
-            android:id="@+id/switch1"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:theme="@style/DateSwitch"/>
     </RelativeLayout>
 
     <View
