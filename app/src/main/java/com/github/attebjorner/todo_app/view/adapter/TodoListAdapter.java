@@ -1,6 +1,7 @@
 package com.github.attebjorner.todo_app.view.adapter;
 
 import android.graphics.Paint;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,14 +57,14 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
             if (notes.get(position).isDone())
             {
-                setCheckboxDone(holder.imbCheckbox, holder.tvDescription);
+                holder.setCheckboxDone(notes.get(position));
             }
             else if (notes.get(position).getImportance() == Importance.HIGH)
             {
-                holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
+                holder.setAsImportant(notes.get(position).getDescription());
             }
             holder.imbCheckbox.setOnClickListener(new CheckboxListener(
-                    notes.get(position), holder.imbCheckbox, holder.tvDescription
+                    notes.get(position), holder
             ));
         }
         holder.itemView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
@@ -94,19 +95,42 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
             tvDeadline = (TextView) itemView.findViewById(R.id.tvDeadline);
         }
+
+        public void setCheckboxDone(Note note)
+        {
+            imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
+            if (note.getImportance() == Importance.HIGH)
+            {
+                tvDescription.setText(note.getDescription());
+            }
+            tvDescription.setTextColor(0x4D000000);
+            tvDescription.setPaintFlags(
+                    tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
+            );
+        }
+
+        public void setAsImportant(String text)
+        {
+            imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
+            tvDescription.setText(
+                    Html.fromHtml(
+                            "<font color=#FF3B30>!! </font> <font color=#000000>"
+                                    + text
+                                    + "</font>"
+                    )
+            );
+        }
     }
 
     public static class CheckboxListener implements View.OnClickListener
     {
         private Note note;
-        private ImageButton imbCheckbox;
-        private TextView tvDescription;
+        private ViewHolder holder;
 
-        public CheckboxListener(Note note, ImageButton imbCheckbox, TextView tvDescription)
+        public CheckboxListener(Note note, ViewHolder holder)
         {
             this.note = note;
-            this.imbCheckbox = imbCheckbox;
-            this.tvDescription = tvDescription;
+            this.holder = holder;
         }
 
         @Override
@@ -115,29 +139,23 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             note.setDone(!note.isDone());
             if (note.isDone())
             {
-                setCheckboxDone(imbCheckbox, tvDescription);
+                holder.setCheckboxDone(note);
             }
             else
             {
-                imbCheckbox.setBackgroundResource(
-                        note.getImportance() == Importance.HIGH
-                                ? R.drawable.ic_unchecked_red
-                                : R.drawable.ic_unchecked
-                );
-                tvDescription.setTextColor(0xFF000000);
-                tvDescription.setPaintFlags(
-                        tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
+                if (note.getImportance() == Importance.HIGH)
+                {
+                    holder.setAsImportant(note.getDescription());
+                }
+                else
+                {
+                    holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
+                    holder.tvDescription.setTextColor(0xFF000000);
+                }
+                holder.tvDescription.setPaintFlags(
+                        holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
             }
         }
-    }
-
-    private static void setCheckboxDone(ImageButton imbCheckbox, TextView tvDescription)
-    {
-        imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
-        tvDescription.setTextColor(0x4D000000);
-        tvDescription.setPaintFlags(
-                tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-        );
     }
 }
