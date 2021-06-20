@@ -20,6 +20,7 @@ import com.github.attebjorner.todo_app.view.RecyclerViewReadyCallback;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,14 +30,14 @@ import java.util.stream.Collectors;
 public class MainActivity extends AppCompatActivity
 {
     private boolean showDone;
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
     TinyDB tinyDB;
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
     {
         Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO);
         doneLongNote.setDone(true);
-        notes = Arrays.asList(
+        notes.addAll(Arrays.asList(
                 new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
                 new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
                 new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity
                 new Note("nte 3", LocalDate.now(), Importance.NO),
                 doneLongNote,
                 new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2021, 10, 12), Importance.HIGH)
-        );
+        ));
     }
 
     @Override
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         tinyDB = new TinyDB(this);
+        tinyDB.putListObject("notes", notes);
+
         try
         {
             showDone = tinyDB.getBoolean("showDone");

@@ -1,40 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/back_primary"
-    android:orientation="vertical"
-    tools:context=".view.activity.CreateNoteActivity">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp">
-
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="21dp"
-            android:background="@color/transparent"
-            android:onClick="onClickBack"
-            app:srcCompat="@drawable/ic_close" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/save_back"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="251dp"
-            android:textColor="@color/blue"
-            android:layout_toEndOf="@+id/imageButton"
-            android:fontFamily="@font/roboto_medium"
-            android:textSize="14sp"
-            android:text="@string/save" />
-    </RelativeLayout>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.CreateNoteFragment"
+    android:background="@color/transparent"
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -144,7 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="12dp"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:fontFamily="@font/roboto"
             android:textColor="@color/red"
             android:text="@string/delete" />

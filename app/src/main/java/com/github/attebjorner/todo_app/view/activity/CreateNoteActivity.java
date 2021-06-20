@@ -3,6 +3,7 @@ package com.github.attebjorner.todo_app.view.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -28,5 +29,10 @@ public class CreateNoteActivity extends AppCompatActivity
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
+
+    public void onClickBack(View view)
+    {
+        onBackPressed();
     }
 }

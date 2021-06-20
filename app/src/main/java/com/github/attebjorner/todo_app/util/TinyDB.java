@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -515,7 +516,7 @@ public class TinyDB {
 //    	putListString(key, objStrings);
 //    }
 
-    public <T> void putListObject(String key, ArrayList<T> objArray){
+    public <T> void putListObject(String key, List<T> objArray){
         checkForNullKey(key);
         Gson gson = new Gson();
         ArrayList<String> objStrings = new ArrayList<String>();
