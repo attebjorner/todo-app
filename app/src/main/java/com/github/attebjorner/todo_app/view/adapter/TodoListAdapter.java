@@ -1,5 +1,6 @@
 package com.github.attebjorner.todo_app.view.adapter;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -14,12 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
+import com.github.attebjorner.todo_app.util.TinyDB;
+import com.github.attebjorner.todo_app.view.activity.CreateNoteActivity;
 
 import java.util.List;
 
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private List<Note> notes;
+    private static OnCheckboxListener onCheckboxListener;
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -53,6 +57,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
                 notes.get(position), holder
         ));
+        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
     }
 
     @Override
@@ -77,6 +82,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
         public void setCheckboxDone(Note note)
         {
+
             imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
             if (note.getImportance() == Importance.HIGH)
             {
@@ -86,6 +92,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tvDescription.setPaintFlags(
                     tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
             );
+            onCheckboxListener.onClick(1);
         }
 
         public void setAsImportant(String text)
@@ -99,6 +106,16 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                     )
             );
         }
+    }
+
+    public interface OnCheckboxListener
+    {
+        void onClick(int d);
+    }
+
+    public void setOnCheckboxListener(OnCheckboxListener listener)
+    {
+        onCheckboxListener = listener;
     }
 
     public static class CheckboxListener implements View.OnClickListener
@@ -115,6 +132,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         @Override
         public void onClick(View v)
         {
+//            TODO main screen counter
             note.setDone(!note.isDone());
             if (note.isDone())
             {
@@ -134,7 +152,28 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 holder.tvDescription.setPaintFlags(
                         holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
+                onCheckboxListener.onClick(-1);
             }
+        }
+    }
+
+    public static class InfoListener implements View.OnClickListener
+    {
+        private Note note;
+
+        public InfoListener(Note note)
+        {
+            this.note = note;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            TinyDB tinyDB = new TinyDB(v.getContext());
+            tinyDB.putObject("editNote", note);
+            Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
+            intent.putExtra("isNew", false);
+            v.getContext().startActivity(intent);
         }
     }
 }

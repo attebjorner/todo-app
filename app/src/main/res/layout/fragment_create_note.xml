@@ -17,13 +17,12 @@
         android:minHeight="104dp" >
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:ems="10"
-            android:inputType="textMultiLine"
-            android:text="Name" />
+            android:inputType="textMultiLine" />
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
@@ -43,7 +42,7 @@
 
         <Spinner
             android:id="@+id/spinImportance"
-            android:layout_width="140dp"
+            android:layout_width="200dp"
             android:layout_height="21dp" />
     </LinearLayout>
 
@@ -110,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            app:srcCompat="@drawable/ic_delete" />
+            app:srcCompat="@drawable/ic_delete_dis" />
 
         <TextView
             android:id="@+id/tvDelete"
@@ -119,7 +118,7 @@
             android:paddingStart="12dp"
             android:textSize="16sp"
             android:fontFamily="@font/roboto"
-            android:textColor="@color/red"
+            android:textColor="@color/label_disable"
             android:text="@string/delete" />
     </LinearLayout>
 

@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity
 {
     private boolean showDone;
     private List<Note> notes = new ArrayList<>();
+    private long doneNotesCount = 0;
+    TextView tvDone;
     TinyDB tinyDB;
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
@@ -71,12 +73,12 @@ public class MainActivity extends AppCompatActivity
             showDone = false;
             tinyDB.putBoolean("showDone", false);
         }
-
-        TextView tvDone = (TextView) findViewById(R.id.tvDoneCounter);
-        tvDone.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
-
+        setCounterTv();
         sortNotesList();
         initRecyclerView();
+
+        TextView tvNew = (TextView) findViewById(R.id.tvNew);
+        tvNew.setOnClickListener(this::onClickCreateNote);
     }
 
     public void onClickVisibility(View view)
@@ -91,7 +93,15 @@ public class MainActivity extends AppCompatActivity
     public void onClickCreateNote(View view)
     {
         Intent intent = new Intent(this, CreateNoteActivity.class);
+        intent.putExtra("isNew", true);
         startActivity(intent);
+    }
+
+    private void setCounterTv()
+    {
+        tvDone = (TextView) findViewById(R.id.tvDoneCounter);
+//        doneNotesCount = notes.stream().filter(Note::isDone).count();
+        tvDone.setText(getString(R.string.done, doneNotesCount));
     }
 
     private void initRecyclerView()
@@ -108,6 +118,15 @@ public class MainActivity extends AppCompatActivity
                         .collect(Collectors.toList())
         );
         rvTodo.setAdapter(adapter);
+        adapter.setOnCheckboxListener(new TodoListAdapter.OnCheckboxListener()
+        {
+            @Override
+            public void onClick(int d)
+            {
+                doneNotesCount += d;
+                tvDone.setText(getString(R.string.done, doneNotesCount));
+            }
+        });
     }
 
 //    сортирую чтобы первее был дедлайн, потом -- важность
