@@ -62,7 +62,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         tinyDB = new TinyDB(this);
-        tinyDB.putListObject("notes", notes);
+        try
+        {
+            notes = tinyDB.getListObject("notes", Note.class);
+        }
+        catch (Exception e)
+        {
+            tinyDB.putListObject("notes", notes);
+        }
 
         try
         {
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity
         ImageButton imbVisible = (ImageButton) view;
         imbVisible.setImageResource(VISIBLE_R[showDone ? 0 : 1]);
         showDone = !showDone;
+        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
         tinyDB.putBoolean("showDone", showDone);
         initRecyclerView();
     }
@@ -100,13 +108,11 @@ public class MainActivity extends AppCompatActivity
     private void setCounterTv()
     {
         tvDone = (TextView) findViewById(R.id.tvDoneCounter);
-//        doneNotesCount = notes.stream().filter(Note::isDone).count();
         tvDone.setText(getString(R.string.done, doneNotesCount));
     }
 
     private void initRecyclerView()
     {
-        CardView cvTodo = (CardView) findViewById(R.id.cvTodo);
         RecyclerView rvTodo = (RecyclerView) findViewById(R.id.rvTodo);
         LinearLayoutManager llManager = new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false
@@ -118,14 +124,10 @@ public class MainActivity extends AppCompatActivity
                         .collect(Collectors.toList())
         );
         rvTodo.setAdapter(adapter);
-        adapter.setOnCheckboxListener(new TodoListAdapter.OnCheckboxListener()
+        adapter.setOnCheckboxListener(d ->
         {
-            @Override
-            public void onClick(int d)
-            {
-                doneNotesCount += d;
-                tvDone.setText(getString(R.string.done, doneNotesCount));
-            }
+            doneNotesCount += d;
+            tvDone.setText(getString(R.string.done, doneNotesCount));
         });
     }
 

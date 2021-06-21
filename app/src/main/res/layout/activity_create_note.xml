@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/ic_close" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/save_back"

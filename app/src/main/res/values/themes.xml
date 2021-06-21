@@ -2,9 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.Todoapp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/white</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryVariant">@color/blue</item>
+        <item name="colorOnPrimary">@color/blue</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/white</item>
@@ -22,5 +22,9 @@
 
 <!--        &lt;!&ndash; inactive track color (30% transparency) &ndash;&gt;-->
 <!--        <item name="android:colorForeground">#0F000000</item>-->
+    </style>
+
+    <style name="DateDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue</item>
     </style>
 </resources>

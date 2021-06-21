@@ -57,7 +57,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
                 notes.get(position), holder
         ));
-        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
+        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position), position));
     }
 
     @Override
@@ -160,10 +160,12 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static class InfoListener implements View.OnClickListener
     {
         private Note note;
+        private int pos;
 
-        public InfoListener(Note note)
+        public InfoListener(Note note, int pos)
         {
             this.note = note;
+            this.pos = pos;
         }
 
         @Override
@@ -173,6 +175,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tinyDB.putObject("editNote", note);
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
+            intent.putExtra("pos", pos);
             v.getContext().startActivity(intent);
         }
     }
