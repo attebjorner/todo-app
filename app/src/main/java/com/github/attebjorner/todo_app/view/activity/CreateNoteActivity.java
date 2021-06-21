@@ -6,11 +6,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.view.CreateNoteFragment;
+import com.github.attebjorner.todo_app.view.fragment.CreateNoteFragment;
 
 public class CreateNoteActivity extends AppCompatActivity
 {

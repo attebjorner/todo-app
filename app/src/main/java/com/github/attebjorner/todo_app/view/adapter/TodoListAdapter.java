@@ -20,7 +20,6 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private List<Note> notes;
-    private int totalHeightPx = 8 + 8;
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -40,46 +39,26 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull TodoListAdapter.ViewHolder holder, int position)
     {
-        if (position == notes.size())
+        holder.tvDescription.setText(notes.get(position).getDescription());
+        if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
+        else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
+        if (notes.get(position).isDone())
         {
-            holder.tvDescription.setText(R.string.add_new);
-            holder.tvDescription.setTextColor(0x4D000000);
-            holder.tvDeadline.setVisibility(View.GONE);
-            holder.imbCheckbox.setVisibility(View.GONE);
-            holder.imbInfo.setVisibility(View.GONE);
-            int paddingPx = (int) (35 * holder.tvDescription.getContext().getResources().getDisplayMetrics().density + 0.5f);
-            holder.tvDescription.setPadding(paddingPx, 0, 0, 0);
+            holder.setCheckboxDone(notes.get(position));
         }
-        else
+        else if (notes.get(position).getImportance() == Importance.HIGH)
         {
-            holder.tvDescription.setText(notes.get(position).getDescription());
-            if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
-            else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
-            if (notes.get(position).isDone())
-            {
-                holder.setCheckboxDone(notes.get(position));
-            }
-            else if (notes.get(position).getImportance() == Importance.HIGH)
-            {
-                holder.setAsImportant(notes.get(position).getDescription());
-            }
-            holder.imbCheckbox.setOnClickListener(new CheckboxListener(
-                    notes.get(position), holder
-            ));
+            holder.setAsImportant(notes.get(position).getDescription());
         }
-        holder.itemView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        totalHeightPx += holder.itemView.getMeasuredHeight();
+        holder.imbCheckbox.setOnClickListener(new CheckboxListener(
+                notes.get(position), holder
+        ));
     }
 
     @Override
     public int getItemCount()
     {
-        return notes.size() + 1;
-    }
-
-    public int getTotalHeightPx()
-    {
-        return totalHeightPx;
+        return notes.size();
     }
 
     public final static class ViewHolder extends RecyclerView.ViewHolder

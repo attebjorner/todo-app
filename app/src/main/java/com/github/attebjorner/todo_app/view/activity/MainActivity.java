@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,14 +15,11 @@ import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
-import com.github.attebjorner.todo_app.view.RecyclerViewReadyCallback;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,30 +108,6 @@ public class MainActivity extends AppCompatActivity
                         .collect(Collectors.toList())
         );
         rvTodo.setAdapter(adapter);
-
-        RecyclerViewReadyCallback recyclerViewReadyCallback;
-
-        recyclerViewReadyCallback = () ->
-        {
-            rvTodo.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            int b = rvTodo.getMeasuredWidth();
-            cvTodo.getLayoutParams().height = 2000;
-            cvTodo.getLayoutParams().width = b;
-            cvTodo.requestLayout();
-            rvTodo.getLayoutParams().height = 2000;
-            rvTodo.getLayoutParams().width = b;
-            rvTodo.requestLayout();
-        };
-
-        rvTodo.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (recyclerViewReadyCallback != null) {
-                    recyclerViewReadyCallback.onLayoutReady();
-                }
-                rvTodo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
     }
 
 //    сортирую чтобы первее был дедлайн, потом -- важность

@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.view;
+package com.github.attebjorner.todo_app.view.fragment;
 
 import android.os.Bundle;
 
