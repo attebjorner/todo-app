@@ -7,26 +7,34 @@
     android:background="@color/back_primary"
     tools:context=".view.activity.MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/tvMyTasks"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="92dp"
             android:fontFamily="@font/roboto_medium"
             android:paddingStart="60dp"
             android:paddingTop="50dp"
             android:text="@string/my_tasks"
             android:textColor="@color/label_primary"
-            android:textSize="32sp" />
+            android:textSize="32sp"
+            app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal">
+            android:id="@+id/relativeLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/scvTodo"
+            app:layout_constraintStart_toStartOf="@+id/tvMyTasks"
+            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">
 
             <TextView
                 android:id="@+id/tvDoneCounter"
@@ -54,15 +62,19 @@
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scvTodo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvTodo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginHorizontal="8dp"
+                android:layout_marginVertical="8dp"
                 app:cardCornerRadius="8dp">
 
                 <LinearLayout
@@ -81,12 +93,12 @@
                         android:id="@+id/tvNew"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:paddingStart="52dp"
-                        android:gravity="center_vertical"
                         android:fontFamily="@font/roboto"
-                        android:textSize="16sp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="52dp"
+                        android:text="@string/add_new"
                         android:textColor="@color/label_tertiary"
-                        android:text="@string/add_new" />
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
@@ -94,7 +106,7 @@
 
         </androidx.core.widget.NestedScrollView>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddNote"
