@@ -28,8 +28,9 @@ public class MainActivity extends AppCompatActivity
     private boolean showDone;
     private List<Note> notes = new ArrayList<>();
     private long doneNotesCount = 0;
-    TextView tvDone;
-    TinyDB tinyDB;
+    private TextView tvDone;
+    private TinyDB tinyDB;
+    private ImageButton imbVisible;
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
     private void fillNotes()
@@ -73,6 +74,9 @@ public class MainActivity extends AppCompatActivity
 //        returns false by default
         showDone = tinyDB.getBoolean("showDone");
 
+        imbVisible = (ImageButton) findViewById(R.id.imageButton2);
+        imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
+        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
         setCounterTv();
         sortNotesList();
         initRecyclerView();
@@ -84,8 +88,8 @@ public class MainActivity extends AppCompatActivity
     public void onClickVisibility(View view)
     {
         ImageButton imbVisible = (ImageButton) view;
-        imbVisible.setImageResource(VISIBLE_R[showDone ? 0 : 1]);
         showDone = !showDone;
+        imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
         if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
         tinyDB.putBoolean("showDone", showDone);
         initRecyclerView();
@@ -101,7 +105,7 @@ public class MainActivity extends AppCompatActivity
     private void setCounterTv()
     {
         tvDone = (TextView) findViewById(R.id.tvDoneCounter);
-        tvDone.setText(getString(R.string.done, doneNotesCount));
+        if (!showDone) tvDone.setText(getString(R.string.done, doneNotesCount));
     }
 
     private void initRecyclerView()

@@ -156,7 +156,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 }
                 else
                 {
-                    holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
                     holder.tvDescription.setTextColor(0xFF000000);
                 }
                 holder.tvDescription.setPaintFlags(
@@ -166,6 +165,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 {
                     holder.setAsOutdated();
                 }
+                else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
                 onCheckboxListener.onClick(-1);
             }
         }
