@@ -33,7 +33,8 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             android:alpha="2"
-            android:layout_marginStart="16dp"></Constraint>
+            android:scaleX="0.8"
+            android:scaleY="0.8" />
         <Constraint
             android:id="@+id/tvDoneCounter"
             android:layout_width="288dp"
