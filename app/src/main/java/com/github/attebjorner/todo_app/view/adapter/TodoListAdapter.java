@@ -18,6 +18,7 @@ import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
 import com.github.attebjorner.todo_app.view.activity.CreateNoteActivity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
@@ -45,7 +46,12 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     {
         holder.tvDescription.setText(notes.get(position).getDescription());
         if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
-        else holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
+        else
+        {
+            holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
+            if (notes.get(position).getDeadline().isBefore(LocalDate.now())) holder.setAsOutdated();
+        }
+
         if (notes.get(position).isDone())
         {
             holder.setCheckboxDone(notes.get(position));
@@ -54,6 +60,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             holder.setAsImportant(notes.get(position).getDescription());
         }
+
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
                 notes.get(position), holder
         ));
@@ -97,7 +104,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
         public void setAsImportant(String text)
         {
-            imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
             tvDescription.setText(
                     Html.fromHtml(
                             "<font color=#FF3B30>!! </font> <font color=#000000>"
@@ -105,6 +111,11 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                                     + "</font>"
                     )
             );
+        }
+
+        public void setAsOutdated()
+        {
+            imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
         }
     }
 
@@ -132,7 +143,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         @Override
         public void onClick(View v)
         {
-//            TODO main screen counter
             note.setDone(!note.isDone());
             if (note.isDone())
             {
@@ -152,6 +162,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 holder.tvDescription.setPaintFlags(
                         holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
+                if (note.getDeadline() != null && note.getDeadline().isBefore(LocalDate.now()))
+                {
+                    holder.setAsOutdated();
+                }
                 onCheckboxListener.onClick(-1);
             }
         }

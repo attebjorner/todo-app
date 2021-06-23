@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity
     TinyDB tinyDB;
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
+    private void fillNotes()
     {
         Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO);
         doneLongNote.setDone(true);
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity
                 new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO),
                 new Note("nte 3", LocalDate.now(), Importance.NO),
                 doneLongNote,
-                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2021, 10, 12), Importance.HIGH)
+                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2020, 10, 12), Importance.HIGH)
         ));
     }
 
@@ -62,24 +63,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         tinyDB = new TinyDB(this);
-        try
+
+        notes = tinyDB.getListObject("notes", Note.class);
+        if (notes.isEmpty())
         {
-            notes = tinyDB.getListObject("notes", Note.class);
-        }
-        catch (Exception e)
-        {
+            fillNotes();
             tinyDB.putListObject("notes", notes);
         }
+//        returns false by default
+        showDone = tinyDB.getBoolean("showDone");
 
-        try
-        {
-            showDone = tinyDB.getBoolean("showDone");
-        }
-        catch (Exception e)
-        {
-            showDone = false;
-            tinyDB.putBoolean("showDone", false);
-        }
         setCounterTv();
         sortNotesList();
         initRecyclerView();

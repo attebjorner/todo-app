@@ -1,6 +1,7 @@
 package com.github.attebjorner.todo_app.view.fragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.SwitchCompat;
@@ -20,6 +21,8 @@ import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
+import com.github.attebjorner.todo_app.view.activity.CreateNoteActivity;
+import com.github.attebjorner.todo_app.view.activity.MainActivity;
 
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -64,18 +67,16 @@ public class CreateNoteFragment extends Fragment
         rootView = inflater.inflate(R.layout.fragment_create_note, container, false);
 
         spinner = (Spinner) rootView.findViewById(R.id.spinImportance);
+        tvDescription = rootView.findViewById(R.id.etDescription);
+        tvDate = rootView.findViewById(R.id.tvDate);
+        tinyDB = new TinyDB(getContext());
+        notes = tinyDB.getListObject("notes", Note.class);
         setImportanceSpinner();
         if (!isNew)
         {
             enableDelete();
             setNoteData();
         }
-
-        tvDescription = rootView.findViewById(R.id.etDescription);
-        tvDate = rootView.findViewById(R.id.tvDate);
-
-        tinyDB = new TinyDB(getContext());
-        notes = tinyDB.getListObject("notes", Note.class);
 
         SwitchCompat switchDate = rootView.findViewById(R.id.switchDate);
         Calendar newCalendar = Calendar.getInstance();
@@ -103,6 +104,8 @@ public class CreateNoteFragment extends Fragment
         {
             if (isNew) onCreateNew(v);
             else onSaveNote(v);
+            Intent intent = new Intent(v.getContext(), MainActivity.class);
+            v.getContext().startActivity(intent);
         });
         return rootView;
     }
@@ -146,7 +149,7 @@ public class CreateNoteFragment extends Fragment
 
     private void setNoteData()
     {
-        TinyDB tinyDB = new TinyDB(getContext());
+        tinyDB = new TinyDB(getContext());
         Note note = tinyDB.getObject("editNote", Note.class);
         tvDescription.setText(note.getDescription());
         spinner.setSelection(note.getImportance().getValue());
