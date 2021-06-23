@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:fontFamily="@font/roboto_medium"
-            android:paddingStart="60dp"
+
 
             android:text="@string/my_tasks"
             android:textColor="@color/label_primary"
@@ -43,7 +43,7 @@
             android:layout_width="288dp"
             android:layout_height="24dp"
             android:fontFamily="@font/roboto"
-            android:paddingStart="60dp"
+
             android:text="@string/done"
             android:textColor="@color/label_tertiary"
             android:textSize="16sp"

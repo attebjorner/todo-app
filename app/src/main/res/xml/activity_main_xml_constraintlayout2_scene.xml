@@ -20,7 +20,8 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             android:id="@+id/tvMyTasks"
-            android:layout_marginTop="50dp" />
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="60dp" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
@@ -31,7 +32,8 @@
             motion:layout_constraintBottom_toTopOf="@+id/tvDoneCounter"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:alpha="2"></Constraint>
+            android:alpha="2"
+            android:layout_marginStart="16dp"></Constraint>
         <Constraint
             android:id="@+id/tvDoneCounter"
             android:layout_width="288dp"
