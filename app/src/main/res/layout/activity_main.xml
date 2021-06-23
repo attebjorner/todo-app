@@ -19,8 +19,6 @@
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:fontFamily="@font/roboto_medium"
-
-
             android:text="@string/my_tasks"
             android:textColor="@color/label_primary"
             android:textSize="32sp"
@@ -29,41 +27,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--        <RelativeLayout-->
-        <!--            android:id="@+id/relativeLayout"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="24dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/scvTodo"-->
-        <!--            app:layout_constraintStart_toStartOf="@+id/tvMyTasks"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">-->
-
         <TextView
             android:id="@+id/tvDoneCounter"
             android:layout_width="288dp"
             android:layout_height="24dp"
             android:fontFamily="@font/roboto"
-
             android:text="@string/done"
             android:textColor="@color/label_tertiary"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/scvTodo"
             app:layout_constraintStart_toStartOf="@+id/tvMyTasks"
             app:layout_constraintTop_toBottomOf="@+id/tvMyTasks" />
-
-        <!--        </RelativeLayout>-->
-
-        <!--        <ImageButton-->
-        <!--            android:id="@+id/imbVisible"-->
-        <!--            android:layout_width="0dp"-->
-        <!--            android:layout_height="0dp"-->
-        <!--            android:layout_marginEnd="24dp"-->
-        <!--            android:layout_marginBottom="0dp"-->
-        <!--            android:background="@color/back_primary"-->
-        <!--            android:onClick="onClickVisibility"-->
-        <!--            android:src="@drawable/ic_visibility"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/scvTodo"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent" />-->
 
         <ImageButton
             android:id="@+id/imageButton2"
@@ -72,6 +46,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:background="@color/back_primary"
+            android:onClick="onClickVisibility"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_visibility" />
