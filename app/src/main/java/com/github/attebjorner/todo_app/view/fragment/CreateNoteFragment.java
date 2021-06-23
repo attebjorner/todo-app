@@ -41,18 +41,6 @@ public class CreateNoteFragment extends Fragment
     private TextView tvDescription;
     private TextView tvDate;
 
-    public CreateNoteFragment(boolean isNew)
-    {
-        super();
-        this.isNew = isNew;
-    }
-
-    public CreateNoteFragment(boolean isNew, int pos)
-    {
-        super();
-        this.isNew = isNew;
-        this.pos = pos;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -66,10 +54,15 @@ public class CreateNoteFragment extends Fragment
     {
         rootView = inflater.inflate(R.layout.fragment_create_note, container, false);
 
+        tinyDB = new TinyDB(getContext());
+
+        isNew = tinyDB.getBoolean("isNewFragment");
+        if (!isNew) pos = tinyDB.getInt("posFragment");
+
         spinner = (Spinner) rootView.findViewById(R.id.spinImportance);
         tvDescription = rootView.findViewById(R.id.etDescription);
         tvDate = rootView.findViewById(R.id.tvDate);
-        tinyDB = new TinyDB(getContext());
+
         notes = tinyDB.getListObject("notes", Note.class);
         setImportanceSpinner();
         if (!isNew)

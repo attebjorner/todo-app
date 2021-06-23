@@ -39,9 +39,10 @@ public class CreateNoteActivity extends AppCompatActivity
 
     private void setFragment()
     {
-        Fragment fragment = (isNew)
-                ? new CreateNoteFragment(true)
-                : new CreateNoteFragment(false, intent.getIntExtra("pos", -1));
+        TinyDB tinyDB = new TinyDB(this);
+        tinyDB.putBoolean("isNewFragment", isNew);
+        if (!isNew) tinyDB.putInt("posFragment", intent.getIntExtra("pos", -1));
+        Fragment fragment = new CreateNoteFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, fragment);
         ft.commit();

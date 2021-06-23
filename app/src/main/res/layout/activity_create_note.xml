@@ -28,9 +28,8 @@
             android:background="@drawable/save_back"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="251dp"
             android:textColor="@color/blue"
-            android:layout_toEndOf="@+id/imageButton"
+
             android:fontFamily="@font/roboto_medium"
             android:textSize="14sp"
             android:text="@string/save" />

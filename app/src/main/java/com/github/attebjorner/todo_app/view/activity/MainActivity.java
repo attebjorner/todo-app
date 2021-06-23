@@ -90,7 +90,8 @@ public class MainActivity extends AppCompatActivity
         ImageButton imbVisible = (ImageButton) view;
         showDone = !showDone;
         imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
-        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
+//        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
+        doneNotesCount = 0;
         tinyDB.putBoolean("showDone", showDone);
         initRecyclerView();
     }
