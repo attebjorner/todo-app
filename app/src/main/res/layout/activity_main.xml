@@ -22,43 +22,45 @@
             android:text="@string/my_tasks"
             android:textColor="@color/label_primary"
             android:textSize="32sp"
-            app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
+            app:layout_constraintBottom_toTopOf="@+id/tvDoneCounter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
-            android:layout_width="wrap_content"
+<!--        <RelativeLayout-->
+<!--            android:id="@+id/relativeLayout"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="24dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/scvTodo"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/tvMyTasks"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">-->
+
+        <TextView
+            android:id="@+id/tvDoneCounter"
+            android:layout_width="288dp"
             android:layout_height="24dp"
-            android:orientation="horizontal"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="60dp"
+            android:text="@string/done"
+            android:textColor="@color/label_tertiary"
+            android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/scvTodo"
             app:layout_constraintStart_toStartOf="@+id/tvMyTasks"
-            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">
+            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks" />
 
-            <TextView
-                android:id="@+id/tvDoneCounter"
-                android:layout_width="288dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:gravity="center_vertical"
-                android:paddingStart="60dp"
-                android:text="@string/done"
-                android:textColor="@color/label_tertiary"
-                android:textSize="16sp" />
+<!--            <ImageButton-->
+<!--                android:id="@+id/imbVisible"-->
+<!--                android:layout_width="24dp"-->
+<!--                android:layout_height="24dp"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_marginEnd="24dp"-->
+<!--                android:background="@color/back_primary"-->
+<!--                android:gravity="top|end"-->
+<!--                android:onClick="onClickVisibility"-->
+<!--                android:src="@drawable/ic_visibility" />-->
 
-            <ImageButton
-                android:id="@+id/imbVisible"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="24dp"
-                android:background="@color/back_primary"
-                android:gravity="top|end"
-                android:onClick="onClickVisibility"
-                android:src="@drawable/ic_visibility" />
-
-        </RelativeLayout>
+<!--        </RelativeLayout>-->
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scvTodo"
@@ -67,7 +69,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+            app:layout_constraintTop_toBottomOf="@+id/tvDoneCounter">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvTodo"
