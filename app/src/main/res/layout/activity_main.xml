@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/back_primary"
+    app:layoutDescription="@xml/activity_main_scene"
     tools:context=".view.activity.MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layoutDescription="@xml/activity_main_xml_constraintlayout2_scene">
 
         <TextView
             android:id="@+id/tvMyTasks"
             android:layout_width="0dp"
-            android:layout_height="92dp"
+            android:layout_height="42dp"
             android:fontFamily="@font/roboto_medium"
             android:paddingStart="60dp"
-            android:paddingTop="50dp"
+
             android:text="@string/my_tasks"
             android:textColor="@color/label_primary"
             android:textSize="32sp"
@@ -27,14 +29,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <RelativeLayout-->
-<!--            android:id="@+id/relativeLayout"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="24dp"-->
-<!--            android:orientation="horizontal"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/scvTodo"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/tvMyTasks"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">-->
+        <!--        <RelativeLayout-->
+        <!--            android:id="@+id/relativeLayout"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/scvTodo"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/tvMyTasks"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/tvMyTasks">-->
 
         <TextView
             android:id="@+id/tvDoneCounter"
@@ -49,18 +51,18 @@
             app:layout_constraintStart_toStartOf="@+id/tvMyTasks"
             app:layout_constraintTop_toBottomOf="@+id/tvMyTasks" />
 
-<!--            <ImageButton-->
-<!--                android:id="@+id/imbVisible"-->
-<!--                android:layout_width="24dp"-->
-<!--                android:layout_height="24dp"-->
-<!--                android:layout_alignParentEnd="true"-->
-<!--                android:layout_marginEnd="24dp"-->
-<!--                android:background="@color/back_primary"-->
-<!--                android:gravity="top|end"-->
-<!--                android:onClick="onClickVisibility"-->
-<!--                android:src="@drawable/ic_visibility" />-->
+        <!--            <ImageButton-->
+        <!--                android:id="@+id/imbVisible"-->
+        <!--                android:layout_width="24dp"-->
+        <!--                android:layout_height="24dp"-->
+        <!--                android:layout_alignParentEnd="true"-->
+        <!--                android:layout_marginEnd="24dp"-->
+        <!--                android:background="@color/back_primary"-->
+        <!--                android:gravity="top|end"-->
+        <!--                android:onClick="onClickVisibility"-->
+        <!--                android:src="@drawable/ic_visibility" />-->
 
-<!--        </RelativeLayout>-->
+        <!--        </RelativeLayout>-->
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scvTodo"
@@ -108,7 +110,7 @@
 
         </androidx.core.widget.NestedScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddNote"
@@ -128,4 +130,4 @@
         app:srcCompat="@drawable/ic_plus"
         app:tint="@color/white" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
