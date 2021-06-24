@@ -85,17 +85,13 @@ public class CreateNoteFragment extends Fragment
                 newCalendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        switchDate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            if (isChecked) datePicker.show();
+            else
             {
-                if (isChecked) datePicker.show();
-                else
-                {
-                    date = null;
-                    tvDate.setText("");
-                }
+                date = null;
+                tvDate.setText("");
             }
         });
 

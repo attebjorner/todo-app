@@ -66,7 +66,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 notes.get(position), holder
         ));
         holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position), position));
-        holder.itemView.setOnClickListener(new InfoListener(notes.get(position), position));
+        holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position), position));
     }
 
     @Override
