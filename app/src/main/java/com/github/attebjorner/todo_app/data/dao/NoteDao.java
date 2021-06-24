@@ -23,6 +23,9 @@ public interface NoteDao
     @Query("SELECT * FROM notes")
     LiveData<List<Note>> getNotes();
 
+    @Query("SELECT * FROM notes WHERE notes.is_done == 0")
+    LiveData<List<Note>> getUndoneNotes();
+
     @Query("SELECT * FROM notes WHERE notes.id == :id")
     LiveData<Note> get(long id);
 
@@ -31,4 +34,7 @@ public interface NoteDao
 
     @Delete
     void delete(Note note);
+
+//    @Query("SELECT COUNT(notes.id) FROM notes WHERE notes.is_done == 1")
+//    int getDoneNotesCount();
 }

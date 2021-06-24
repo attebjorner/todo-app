@@ -31,13 +31,6 @@ public class Note
         this.importance = importance;
     }
 
-    public Note(String description, Importance importance)
-    {
-        this.description = description;
-        this.isDone = false;
-        this.importance = importance;
-    }
-
     public long getId()
     {
         return id;

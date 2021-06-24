@@ -2,9 +2,9 @@ package com.github.attebjorner.todo_app.view.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.attebjorner.todo_app.R;
@@ -24,47 +23,49 @@ import com.github.attebjorner.todo_app.util.TinyDB;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
+import viewmodel.NoteViewModel;
 
 public class MainActivity extends AppCompatActivity
 {
     private ActivityMainBinding binding;
+    private NoteViewModel noteViewModel;
 
-    private boolean showDone;
-    private List<Note> notes = new ArrayList<>();
-    private long doneNotesCount = 0;
+//    private boolean showDone;
+    private List<Note> preNotes;
+    private List<Note> curNotes;
+//    private long doneNotesCount = 0;
     private TinyDB tinyDB;
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
-    private void fillNotes()
     {
-        Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO);
+        Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO);
         doneLongNote.setDone(true);
-        notes.addAll(Arrays.asList(
+        preNotes = Arrays.asList(
                 new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
                 new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
                 new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
                 new Note("1+-", LocalDate.of(2021, 10, 5), Importance.LOW),
                 new Note("0+-", LocalDate.of(2021, 10, 3), Importance.NO),
                 new Note("0+-", LocalDate.of(2021, 10, 6), Importance.NO),
-                new Note("2--", Importance.HIGH),
-                new Note("1--", Importance.LOW),
-                new Note("0--", Importance.NO),
-                new Note("2--", Importance.HIGH),
-                new Note("1--", Importance.LOW),
-                new Note("0--", Importance.NO),
-                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", Importance.NO),
+                new Note("2--", null, Importance.HIGH),
+                new Note("1--", null, Importance.LOW),
+                new Note("0--", null, Importance.NO),
+                new Note("2--", null, Importance.HIGH),
+                new Note("1--", null, Importance.LOW),
+                new Note("0--", null, Importance.NO),
+                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO),
                 new Note("nte 3", LocalDate.now(), Importance.NO),
                 doneLongNote,
                 new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2020, 10, 12), Importance.HIGH)
-        ));
+        );
     }
 
     @Override
@@ -76,37 +77,81 @@ public class MainActivity extends AppCompatActivity
         View view = binding.getRoot();
         setContentView(view);
 
-        tinyDB = new TinyDB(this);
-        notes = tinyDB.getListObject("notes", Note.class);
-        if (notes.isEmpty())
-        {
-            fillNotes();
-            tinyDB.putListObject("notes", notes);
-        }
-//        returns false by default
-        showDone = tinyDB.getBoolean("showDone");
+        noteViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(NoteViewModel.class);
+//        for (Note n : preNotes)
+//        {
+//            NoteViewModel.insert(n);
+//        }
 
-        binding.imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
-        if (!showDone)
+//        noteViewModel.getShowDone().observe(this, showDon ->
+//        {
+//            if (showDon)
+//            {
+//                noteViewModel.getNotes().observe(MainActivity.this, notes ->
+//                {
+//                    initRecyclerView(notes);
+//
+//                });
+//            }
+//            else
+//            {
+//                noteViewModel.getUndoneNotes().observe(MainActivity.this, notes -> initRecyclerView(notes));
+//            }
+//        });
+        noteViewModel.getShowDone().observe(this, showDon ->
         {
-            doneNotesCount = notes.stream().filter(Note::isDone).count();
-        }
+            noteViewModel.getNotes().observe(MainActivity.this, notes ->
+            {
+                if (showDon)
+                {
+                    binding.imbVisible.setImageResource(VISIBLE_R[1]);
+                    curNotes = sortNotesList(notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList()));
+                    initRecyclerView(curNotes);
+                }
+                else
+                {
+                    binding.imbVisible.setImageResource(VISIBLE_R[0]);
+                    curNotes = notes;
+                    initRecyclerView(sortNotesList(notes));
+                }
+                binding.tvDoneCounter.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
+            });
+        });
+
+
+        tinyDB = new TinyDB(this);
+//        notes = tinyDB.getListObject("notes", Note.class);
+//        if (notes.isEmpty())
+//        {
+//            fillNotes();
+//            tinyDB.putListObject("notes", notes);
+//        }
+
+//        returns false by default
+//        showDone = tinyDB.getBoolean("showDone");
+
+//        binding.imbVisible.setImageResource(VISIBLE_R[noteViewModel.getShowDone().getValue() ? 1 : 0]);
+//        if (!showDone)
+//        {
+//            doneNotesCount = preNotes.stream().filter(Note::isDone).count();
+//        }
 
         setScrollingAnimation();
-        setCounterTv();
-        sortNotesList();
-        initRecyclerView();
+//        setCounterTv();
+//        sortNotesList();
+//        initRecyclerView();
         setAddNewBtn();
     }
 
     public void onClickVisibility(View view)
     {
-        showDone = !showDone;
-        binding.imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
+//        showDone = !showDone;
+//        binding.imbVisible.setImageResource(VISIBLE_R[noteViewModel.getShowDone().getValue() ? 1 : 0]);
 //        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
-        doneNotesCount = 0;
-        tinyDB.putBoolean("showDone", showDone);
-        initRecyclerView();
+//        doneNotesCount = 0;
+//        tinyDB.putBoolean("showDone", showDone);
+        noteViewModel.getShowDone().setValue(!noteViewModel.getShowDone().getValue());
+//        initRecyclerView();
     }
 
     public void onClickCreateNote(View view)
@@ -132,38 +177,39 @@ public class MainActivity extends AppCompatActivity
         tvNew.setOnClickListener(this::onClickCreateNote);
     }
 
-    private void setCounterTv()
-    {
-        if (!showDone)
-        {
-            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
-        }
-    }
+//    private void setCounterTv()
+//    {
+//        if (!showDone)
+//        {
+//            binding.tvDoneCounter.setText(getString(R.string.done, noteViewModel.getDoneCount()));
+//        }
+//    }
 
-    private void initRecyclerView()
+    private void initRecyclerView(List<Note> notes)
     {
         LinearLayoutManager llManager = new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false
         );
         binding.rvTodo.setLayoutManager(llManager);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvTodo);
-        adapter = new TodoListAdapter(
-                showDone ? notes : notes.stream()
-                        .filter(x -> !x.isDone())
-                        .collect(Collectors.toList())
-        );
+//        adapter = new TodoListAdapter(
+//                showDone ? preNotes : preNotes.stream()
+//                        .filter(x -> !x.isDone())
+//                        .collect(Collectors.toList())
+//        );
+        adapter = new TodoListAdapter(notes);
         binding.rvTodo.setAdapter(adapter);
-        adapter.setOnCheckboxListener(d ->
-        {
-            doneNotesCount += d;
-            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
-        });
+//        adapter.setOnCheckboxListener(d ->
+//        {
+//            doneNotesCount += d;
+//            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
+//        });
     }
 
     //    сортирую чтобы первее был дедлайн, потом -- важность
-    private void sortNotesList()
+    private List<Note> sortNotesList(List<Note> notes)
     {
-        notes = notes.stream().sorted((o1, o2) ->
+        return notes.stream().sorted((o1, o2) ->
         {
             if (o1.getImportance().getValue() < o2.getImportance().getValue()) return 1;
             else if (o1.getImportance().getValue() > o2.getImportance().getValue()) return -1;
@@ -190,13 +236,16 @@ public class MainActivity extends AppCompatActivity
 
     private void deleteNote(int pos)
     {
-        notes.remove(pos);
+//        curNotes.remove(pos);
+        NoteViewModel.delete(curNotes.get(pos));
         adapter.notifyItemRemoved(pos);
     }
 
     private void setNoteDone(int pos)
     {
-        notes.get(pos).setDone(true);
+//        preNotes.get(pos).setDone(true);
+        curNotes.get(pos).setDone(true);
+        NoteViewModel.update(curNotes.get(pos));
         adapter.notifyDataSetChanged();
     }
 

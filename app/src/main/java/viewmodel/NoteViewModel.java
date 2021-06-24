@@ -5,16 +5,19 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.attebjorner.todo_app.data.repository.TodoRepository;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class NoteViewModel extends AndroidViewModel
 {
     public static TodoRepository repository;
     public final LiveData<List<Note>> notes;
+    public MutableLiveData<Boolean> showDone = new MutableLiveData<>(false);
 
     public NoteViewModel(@NonNull Application application)
     {
@@ -26,6 +29,16 @@ public class NoteViewModel extends AndroidViewModel
     public LiveData<List<Note>> getNotes()
     {
         return notes;
+    }
+
+    public LiveData<List<Note>> getUndoneNotes()
+    {
+        return repository.getUndoneNotes();
+    }
+
+    public MutableLiveData<Boolean> getShowDone()
+    {
+        return showDone;
     }
 
     public static void insert(Note note)
@@ -47,4 +60,17 @@ public class NoteViewModel extends AndroidViewModel
     {
         repository.delete(note);
     }
+
+//    public int getDoneCount()
+//    {
+//        try
+//        {
+//            return repository.getDoneCount();
+//        }
+//        catch (ExecutionException | InterruptedException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        return 0;
+//    }
 }

@@ -27,7 +27,7 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private List<Note> notes;
-    private static OnCheckboxListener onCheckboxListener;
+//    private static OnCheckboxListener onCheckboxListener;
     private ListitemBinding binding;
 
     public TodoListAdapter(List<Note> notes)
@@ -105,7 +105,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tvDescription.setPaintFlags(
                     tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
             );
-            onCheckboxListener.onClick(1);
+//            onCheckboxListener.onClick(1);
         }
 
         public void setAsImportant(String text)
@@ -125,15 +125,15 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         }
     }
 
-    public interface OnCheckboxListener
-    {
-        void onClick(int d);
-    }
+//    public interface OnCheckboxListener
+//    {
+//        void onClick(int d);
+//    }
 
-    public void setOnCheckboxListener(OnCheckboxListener listener)
-    {
-        onCheckboxListener = listener;
-    }
+//    public void setOnCheckboxListener(OnCheckboxListener listener)
+//    {
+//        onCheckboxListener = listener;
+//    }
 
     public static class CheckboxListener implements View.OnClickListener
     {
@@ -166,7 +166,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                     holder.setAsOutdated();
                 }
                 else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
-                onCheckboxListener.onClick(-1);
+//                onCheckboxListener.onClick(-1);
             }
         }
     }

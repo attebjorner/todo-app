@@ -9,6 +9,9 @@ import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.NoteRoomDatabase;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class TodoRepository
 {
@@ -25,6 +28,11 @@ public class TodoRepository
     public LiveData<List<Note>> getAllNotes()
     {
         return notes;
+    }
+
+    public LiveData<List<Note>> getUndoneNotes()
+    {
+        return noteDao.getUndoneNotes();
     }
 
     public void insert(Note note)
@@ -46,4 +54,10 @@ public class TodoRepository
     {
         NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.delete(note));
     }
+
+//    public int getDoneCount() throws ExecutionException, InterruptedException
+//    {
+//        final Future<Integer> submit = NoteRoomDatabase.databaseWriterExecutor.submit(() -> noteDao.getDoneNotesCount());
+//        return submit.get();
+//    }
 }
