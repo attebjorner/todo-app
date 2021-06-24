@@ -25,7 +25,7 @@
         <Constraint
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton2"
+            android:id="@+id/imbVisible"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="92dp"
@@ -63,6 +63,6 @@
             android:layout_marginEnd="24dp"
             motion:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"
-            android:id="@+id/imageButton2" />
+            android:id="@+id/imbVisible" />
     </ConstraintSet>
 </MotionScene>

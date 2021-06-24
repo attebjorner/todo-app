@@ -150,14 +150,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             }
             else
             {
-                if (note.getImportance() == Importance.HIGH)
-                {
-                    holder.setAsImportant(note.getDescription());
-                }
-                else
-                {
-                    holder.tvDescription.setTextColor(0xFF000000);
-                }
+                if (note.getImportance() == Importance.HIGH) holder.setAsImportant(note.getDescription());
+                else holder.tvDescription.setTextColor(0xFF000000);
                 holder.tvDescription.setPaintFlags(
                         holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
