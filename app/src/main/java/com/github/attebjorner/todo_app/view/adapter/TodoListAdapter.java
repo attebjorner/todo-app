@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
@@ -95,7 +96,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             {
                 tvDescription.setText(note.getDescription());
             }
-            tvDescription.setTextColor(0x4D000000);
+            tvDescription.setTextColor(ContextCompat.getColor(tvDescription.getContext(), R.color.label_tertiary));
             tvDescription.setPaintFlags(
                     tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
             );
@@ -151,7 +152,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             else
             {
                 if (note.getImportance() == Importance.HIGH) holder.setAsImportant(note.getDescription());
-                else holder.tvDescription.setTextColor(0xFF000000);
+                else holder.tvDescription.setTextColor(ContextCompat.getColor(holder.imbInfo.getContext(), R.color.label_primary));
                 holder.tvDescription.setPaintFlags(
                         holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
