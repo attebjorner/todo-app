@@ -2,7 +2,9 @@ package com.github.attebjorner.todo_app.view.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity
     private TinyDB tinyDB;
     private ImageButton imbVisible;
     private TodoListAdapter adapter;
+    private MotionLayout motionLayout;
+    private NestedScrollView scrollView;
+    private TextView tvMyTasks;
+
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
     private void fillNotes()
@@ -70,7 +76,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         tinyDB = new TinyDB(this);
-
         notes = tinyDB.getListObject("notes", Note.class);
         if (notes.isEmpty())
         {
@@ -86,12 +91,12 @@ public class MainActivity extends AppCompatActivity
         {
             doneNotesCount = notes.stream().filter(Note::isDone).count();
         }
+
+        setScrollingAnimation();
         setCounterTv();
         sortNotesList();
         initRecyclerView();
-
-        TextView tvNew = (TextView) findViewById(R.id.tvNew);
-        tvNew.setOnClickListener(this::onClickCreateNote);
+        setAddNewBtn();
     }
 
     public void onClickVisibility(View view)
@@ -110,6 +115,25 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, CreateNoteActivity.class);
         intent.putExtra("isNew", true);
         startActivity(intent);
+    }
+
+    private void setScrollingAnimation()
+    {
+        motionLayout = findViewById(R.id.constraintLayout2);
+        scrollView = (NestedScrollView) findViewById(R.id.scvTodo);
+        tvMyTasks = findViewById(R.id.tvMyTasks);
+        tvMyTasks.setOnClickListener(v -> scrollView.smoothScrollTo(0, 42));
+        scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
+                                                                            oldScrollX, oldScrollY) ->
+        {
+            if (scrollY <= 42) motionLayout.transitionToStart();
+        });
+    }
+
+    private void setAddNewBtn()
+    {
+        TextView tvNew = (TextView) findViewById(R.id.tvNew);
+        tvNew.setOnClickListener(this::onClickCreateNote);
     }
 
     private void setCounterTv()
@@ -147,27 +171,15 @@ public class MainActivity extends AppCompatActivity
     {
         notes = notes.stream().sorted((o1, o2) ->
         {
-            if (o1.getImportance().getValue() < o2.getImportance().getValue())
-            {
-                return 1;
-            }
-            else if (o1.getImportance().getValue() > o2.getImportance().getValue())
-            {
-                return -1;
-            }
+            if (o1.getImportance().getValue() < o2.getImportance().getValue()) return 1;
+            else if (o1.getImportance().getValue() > o2.getImportance().getValue()) return -1;
             return 0;
         }).sorted((o1, o2) ->
         {
             if (o1.getDeadline() == null || o2.getDeadline() == null)
             {
-                if (o1.getDeadline() == null && o2.getDeadline() == null)
-                {
-                    return 0;
-                }
-                else if (o1.getDeadline() == null)
-                {
-                    return 1;
-                }
+                if (o1.getDeadline() == null && o2.getDeadline() == null) return 0;
+                else if (o1.getDeadline() == null) return 1;
                 return -1;
             }
             else if (o1.getDeadline().isBefore(o2.getDeadline()))

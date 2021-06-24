@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -76,7 +77,7 @@ public class CreateNoteFragment extends Fragment
         DatePickerDialog datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
                 (view, year, monthOfYear, dayOfMonth) ->
         {
-            date = LocalDate.of(year, monthOfYear, dayOfMonth);
+            date = LocalDate.of(year, monthOfYear + 1, dayOfMonth);
             tvDate.setText(date.toString());
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH)
@@ -135,7 +136,7 @@ public class CreateNoteFragment extends Fragment
     private void enableDelete()
     {
         TextView tvDelete = rootView.findViewById(R.id.tvDelete);
-        tvDelete.setTextColor(0xFFFF3B30);
+        tvDelete.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
         ImageButton imbDelete = rootView.findViewById(R.id.imbDelete);
         imbDelete.setBackgroundResource(R.drawable.ic_delete);
     }
