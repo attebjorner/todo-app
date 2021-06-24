@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -41,6 +42,7 @@ public class CreateNoteFragment extends Fragment
 
     private TextView tvDescription;
     private TextView tvDate;
+    private SwitchCompat switchDate;
 
 
     @Override
@@ -63,6 +65,7 @@ public class CreateNoteFragment extends Fragment
         spinner = (Spinner) rootView.findViewById(R.id.spinImportance);
         tvDescription = rootView.findViewById(R.id.etDescription);
         tvDate = rootView.findViewById(R.id.tvDate);
+        switchDate = rootView.findViewById(R.id.switchDate);
 
         notes = tinyDB.getListObject("notes", Note.class);
         setImportanceSpinner();
@@ -72,7 +75,6 @@ public class CreateNoteFragment extends Fragment
             setNoteData();
         }
 
-        SwitchCompat switchDate = rootView.findViewById(R.id.switchDate);
         Calendar newCalendar = Calendar.getInstance();
         DatePickerDialog datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
                 (view, year, monthOfYear, dayOfMonth) ->
@@ -83,13 +85,17 @@ public class CreateNoteFragment extends Fragment
                 newCalendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        switchDate.setOnClickListener(v ->
+        switchDate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
-            if (date == null) datePicker.show();
-            else
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-                date = null;
-                tvDate.setText("");
+                if (isChecked) datePicker.show();
+                else
+                {
+                    date = null;
+                    tvDate.setText("");
+                }
             }
         });
 
@@ -150,6 +156,7 @@ public class CreateNoteFragment extends Fragment
         if (note.getDeadline() != null)
         {
             tvDate.setText(note.getDeadline().toString());
+            switchDate.setChecked(true);
         }
     }
 }

@@ -66,6 +66,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 notes.get(position), holder
         ));
         holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position), position));
+        holder.itemView.setOnClickListener(new InfoListener(notes.get(position), position));
     }
 
     @Override
@@ -152,7 +153,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             else
             {
                 if (note.getImportance() == Importance.HIGH) holder.setAsImportant(note.getDescription());
-                else holder.tvDescription.setTextColor(ContextCompat.getColor(holder.imbInfo.getContext(), R.color.label_primary));
+                else holder.tvDescription.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.label_primary));
                 holder.tvDescription.setPaintFlags(
                         holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
                 );
