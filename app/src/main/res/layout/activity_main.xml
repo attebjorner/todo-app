@@ -9,7 +9,7 @@
     tools:context=".view.activity.MainActivity">
 
     <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/motionLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutDescription="@xml/activity_main_xml_constraintlayout2_scene">

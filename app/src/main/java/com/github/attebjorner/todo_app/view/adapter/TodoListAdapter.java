@@ -10,10 +10,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.ListMenuItemView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
+import com.github.attebjorner.todo_app.databinding.ListitemBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
@@ -26,6 +28,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 {
     private List<Note> notes;
     private static OnCheckboxListener onCheckboxListener;
+    private ListitemBinding binding;
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -36,6 +39,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
+//        binding = ListitemBinding.inflate(getL)
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.listitem, parent, false
         );

@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.attebjorner.todo_app.R;
+import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
@@ -32,16 +33,13 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 public class MainActivity extends AppCompatActivity
 {
+    private ActivityMainBinding binding;
+
     private boolean showDone;
     private List<Note> notes = new ArrayList<>();
     private long doneNotesCount = 0;
-    private TextView tvDone;
     private TinyDB tinyDB;
-    private ImageButton imbVisible;
     private TodoListAdapter adapter;
-    private MotionLayout motionLayout;
-    private NestedScrollView scrollView;
-    private TextView tvMyTasks;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
@@ -74,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         tinyDB = new TinyDB(this);
         notes = tinyDB.getListObject("notes", Note.class);
@@ -85,8 +86,7 @@ public class MainActivity extends AppCompatActivity
 //        returns false by default
         showDone = tinyDB.getBoolean("showDone");
 
-        imbVisible = (ImageButton) findViewById(R.id.imbVisible);
-        imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
+        binding.imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
         if (!showDone)
         {
             doneNotesCount = notes.stream().filter(Note::isDone).count();
@@ -101,9 +101,8 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickVisibility(View view)
     {
-        ImageButton imbVisible = (ImageButton) view;
         showDone = !showDone;
-        imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
+        binding.imbVisible.setImageResource(VISIBLE_R[showDone ? 1 : 0]);
 //        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
         doneNotesCount = 0;
         tinyDB.putBoolean("showDone", showDone);
@@ -119,14 +118,11 @@ public class MainActivity extends AppCompatActivity
 
     private void setScrollingAnimation()
     {
-        motionLayout = findViewById(R.id.constraintLayout2);
-        scrollView = (NestedScrollView) findViewById(R.id.scvTodo);
-        tvMyTasks = findViewById(R.id.tvMyTasks);
-        tvMyTasks.setOnClickListener(v -> scrollView.smoothScrollTo(0, 42));
-        scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
+        binding.tvMyTasks.setOnClickListener(v -> binding.scvTodo.smoothScrollTo(0, 42));
+        binding.scvTodo.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
                                                                             oldScrollX, oldScrollY) ->
         {
-            if (scrollY <= 42) motionLayout.transitionToStart();
+            if (scrollY <= 42) binding.motionLayout.transitionToStart();
         });
     }
 
@@ -138,31 +134,29 @@ public class MainActivity extends AppCompatActivity
 
     private void setCounterTv()
     {
-        tvDone = (TextView) findViewById(R.id.tvDoneCounter);
         if (!showDone)
         {
-            tvDone.setText(getString(R.string.done, doneNotesCount));
+            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
         }
     }
 
     private void initRecyclerView()
     {
-        RecyclerView rvTodo = (RecyclerView) findViewById(R.id.rvTodo);
         LinearLayoutManager llManager = new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false
         );
-        rvTodo.setLayoutManager(llManager);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvTodo);
+        binding.rvTodo.setLayoutManager(llManager);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvTodo);
         adapter = new TodoListAdapter(
                 showDone ? notes : notes.stream()
                         .filter(x -> !x.isDone())
                         .collect(Collectors.toList())
         );
-        rvTodo.setAdapter(adapter);
+        binding.rvTodo.setAdapter(adapter);
         adapter.setOnCheckboxListener(d ->
         {
             doneNotesCount += d;
-            tvDone.setText(getString(R.string.done, doneNotesCount));
+            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
         });
     }
 

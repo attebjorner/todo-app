@@ -1,15 +1,22 @@
 package com.github.attebjorner.todo_app.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Locale;
 
+@Entity(tableName = "notes")
 public class Note
 {
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     private String description;
 
+    @ColumnInfo(name = "is_done")
     private boolean isDone;
 
     private LocalDate deadline;
