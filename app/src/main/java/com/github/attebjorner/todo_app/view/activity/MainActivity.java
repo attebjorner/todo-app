@@ -25,8 +25,8 @@ import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import viewmodel.NoteViewModel;
@@ -36,11 +36,9 @@ public class MainActivity extends AppCompatActivity
     private ActivityMainBinding binding;
     private NoteViewModel noteViewModel;
 
-//    private boolean showDone;
     private List<Note> preNotes;
     private List<Note> curNotes;
-//    private long doneNotesCount = 0;
-    private TinyDB tinyDB;
+//    private TinyDB tinyDB;
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
@@ -82,22 +80,8 @@ public class MainActivity extends AppCompatActivity
 //        {
 //            NoteViewModel.insert(n);
 //        }
+        preconfigRecyclerView();
 
-//        noteViewModel.getShowDone().observe(this, showDon ->
-//        {
-//            if (showDon)
-//            {
-//                noteViewModel.getNotes().observe(MainActivity.this, notes ->
-//                {
-//                    initRecyclerView(notes);
-//
-//                });
-//            }
-//            else
-//            {
-//                noteViewModel.getUndoneNotes().observe(MainActivity.this, notes -> initRecyclerView(notes));
-//            }
-//        });
         noteViewModel.getShowDone().observe(this, showDon ->
         {
             noteViewModel.getNotes().observe(MainActivity.this, notes ->
@@ -105,30 +89,19 @@ public class MainActivity extends AppCompatActivity
                 if (showDon)
                 {
                     binding.imbVisible.setImageResource(VISIBLE_R[1]);
-                    curNotes = sortNotesList(notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList()));
-                    initRecyclerView(curNotes);
+                    curNotes = notes;
+//                    initRecyclerView(curNotes);
                 }
                 else
                 {
                     binding.imbVisible.setImageResource(VISIBLE_R[0]);
-                    curNotes = notes;
-                    initRecyclerView(sortNotesList(notes));
+                    curNotes = notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList());
+//                    initRecyclerView(curNotes);
                 }
+                initRecyclerView(curNotes);
                 binding.tvDoneCounter.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
             });
         });
-
-
-        tinyDB = new TinyDB(this);
-//        notes = tinyDB.getListObject("notes", Note.class);
-//        if (notes.isEmpty())
-//        {
-//            fillNotes();
-//            tinyDB.putListObject("notes", notes);
-//        }
-
-//        returns false by default
-//        showDone = tinyDB.getBoolean("showDone");
 
 //        binding.imbVisible.setImageResource(VISIBLE_R[noteViewModel.getShowDone().getValue() ? 1 : 0]);
 //        if (!showDone)
@@ -137,9 +110,6 @@ public class MainActivity extends AppCompatActivity
 //        }
 
         setScrollingAnimation();
-//        setCounterTv();
-//        sortNotesList();
-//        initRecyclerView();
         setAddNewBtn();
     }
 
@@ -177,21 +147,22 @@ public class MainActivity extends AppCompatActivity
         tvNew.setOnClickListener(this::onClickCreateNote);
     }
 
-//    private void setCounterTv()
-//    {
-//        if (!showDone)
-//        {
-//            binding.tvDoneCounter.setText(getString(R.string.done, noteViewModel.getDoneCount()));
-//        }
-//    }
-
-    private void initRecyclerView(List<Note> notes)
+    private void preconfigRecyclerView()
     {
         LinearLayoutManager llManager = new LinearLayoutManager(
                 this, LinearLayoutManager.VERTICAL, false
         );
         binding.rvTodo.setLayoutManager(llManager);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvTodo);
+    }
+
+    private void initRecyclerView(List<Note> notes)
+    {
+//        LinearLayoutManager llManager = new LinearLayoutManager(
+//                this, LinearLayoutManager.VERTICAL, false
+//        );
+//        binding.rvTodo.setLayoutManager(llManager);
+//        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvTodo);
 //        adapter = new TodoListAdapter(
 //                showDone ? preNotes : preNotes.stream()
 //                        .filter(x -> !x.isDone())
@@ -206,44 +177,14 @@ public class MainActivity extends AppCompatActivity
 //        });
     }
 
-    //    сортирую чтобы первее был дедлайн, потом -- важность
-    private List<Note> sortNotesList(List<Note> notes)
-    {
-        return notes.stream().sorted((o1, o2) ->
-        {
-            if (o1.getImportance().getValue() < o2.getImportance().getValue()) return 1;
-            else if (o1.getImportance().getValue() > o2.getImportance().getValue()) return -1;
-            return 0;
-        }).sorted((o1, o2) ->
-        {
-            if (o1.getDeadline() == null || o2.getDeadline() == null)
-            {
-                if (o1.getDeadline() == null && o2.getDeadline() == null) return 0;
-                else if (o1.getDeadline() == null) return 1;
-                return -1;
-            }
-            else if (o1.getDeadline().isBefore(o2.getDeadline()))
-            {
-                return -1;
-            }
-            else if (o1.getDeadline().isAfter(o2.getDeadline()))
-            {
-                return 1;
-            }
-            return 0;
-        }).collect(Collectors.toList());
-    }
-
     private void deleteNote(int pos)
     {
-//        curNotes.remove(pos);
         NoteViewModel.delete(curNotes.get(pos));
         adapter.notifyItemRemoved(pos);
     }
 
     private void setNoteDone(int pos)
     {
-//        preNotes.get(pos).setDone(true);
         curNotes.get(pos).setDone(true);
         NoteViewModel.update(curNotes.get(pos));
         adapter.notifyDataSetChanged();

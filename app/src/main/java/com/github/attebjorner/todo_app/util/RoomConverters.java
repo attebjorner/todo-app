@@ -21,14 +21,14 @@ public class RoomConverters
     }
 
     @TypeConverter
-    public static String fromImportance(Importance importance)
+    public static Integer fromImportance(Importance importance)
     {
-        return importance == null ? null : importance.name();
+        return importance == null ? null : importance.getValue();
     }
 
     @TypeConverter
-    public static Importance toImportance(String value)
+    public static Importance toImportance(Integer value)
     {
-        return value == null ? null : Importance.valueOf(value);
+        return value == null ? null : Importance.valueOfInt(value);
     }
 }

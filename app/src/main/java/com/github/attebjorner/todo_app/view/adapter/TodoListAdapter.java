@@ -28,7 +28,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 {
     private List<Note> notes;
 //    private static OnCheckboxListener onCheckboxListener;
-    private ListitemBinding binding;
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -39,7 +38,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-//        binding = ListitemBinding.inflate(getL)
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.listitem, parent, false
         );
@@ -69,8 +67,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
                 notes.get(position), holder
         ));
-        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position), position));
-        holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position), position));
+        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
+        holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position)));
     }
 
     @Override
@@ -174,22 +172,21 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static class InfoListener implements View.OnClickListener
     {
         private Note note;
-        private int pos;
+//        private int pos;
 
-        public InfoListener(Note note, int pos)
+        public InfoListener(Note note)
         {
             this.note = note;
-            this.pos = pos;
+//            this.pos = pos;
         }
 
         @Override
         public void onClick(View v)
         {
-            TinyDB tinyDB = new TinyDB(v.getContext());
-            tinyDB.putObject("editNote", note);
+//            TinyDB tinyDB = new TinyDB(v.getContext());
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
-            intent.putExtra("pos", pos);
+            intent.putExtra("id", note.getId());
             v.getContext().startActivity(intent);
         }
     }

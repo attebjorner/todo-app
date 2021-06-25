@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 
 import com.github.attebjorner.todo_app.R;
+import com.github.attebjorner.todo_app.databinding.ActivityCreateNoteBinding;
+import com.github.attebjorner.todo_app.databinding.FragmentCreateNoteBinding;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
 import com.github.attebjorner.todo_app.view.fragment.CreateNoteFragment;
@@ -19,7 +21,7 @@ import java.util.List;
 public class CreateNoteActivity extends AppCompatActivity
 {
     private Intent intent;
-    boolean isNew;
+    private boolean isNew;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,7 +43,7 @@ public class CreateNoteActivity extends AppCompatActivity
     {
         TinyDB tinyDB = new TinyDB(this);
         tinyDB.putBoolean("isNewFragment", isNew);
-        if (!isNew) tinyDB.putInt("posFragment", intent.getIntExtra("pos", -1));
+        if (!isNew) tinyDB.putLong("noteId", intent.getLongExtra("id", -1));
         Fragment fragment = new CreateNoteFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, fragment);

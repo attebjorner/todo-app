@@ -31,11 +31,6 @@ public class NoteViewModel extends AndroidViewModel
         return notes;
     }
 
-    public LiveData<List<Note>> getUndoneNotes()
-    {
-        return repository.getUndoneNotes();
-    }
-
     public MutableLiveData<Boolean> getShowDone()
     {
         return showDone;
@@ -60,17 +55,4 @@ public class NoteViewModel extends AndroidViewModel
     {
         repository.delete(note);
     }
-
-//    public int getDoneCount()
-//    {
-//        try
-//        {
-//            return repository.getDoneCount();
-//        }
-//        catch (ExecutionException | InterruptedException e)
-//        {
-//            e.printStackTrace();
-//        }
-//        return 0;
-//    }
 }

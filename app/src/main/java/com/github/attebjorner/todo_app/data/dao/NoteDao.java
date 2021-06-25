@@ -1,6 +1,7 @@
 package com.github.attebjorner.todo_app.data.dao;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -20,11 +21,8 @@ public interface NoteDao
     @Query("DELETE FROM notes")
     void deleteAll();
 
-    @Query("SELECT * FROM notes")
+    @Query("SELECT * FROM notes ORDER BY notes.is_done, notes.deadline IS NULL, notes.deadline, notes.importance DESC")
     LiveData<List<Note>> getNotes();
-
-    @Query("SELECT * FROM notes WHERE notes.is_done == 0")
-    LiveData<List<Note>> getUndoneNotes();
 
     @Query("SELECT * FROM notes WHERE notes.id == :id")
     LiveData<Note> get(long id);
@@ -34,7 +32,4 @@ public interface NoteDao
 
     @Delete
     void delete(Note note);
-
-//    @Query("SELECT COUNT(notes.id) FROM notes WHERE notes.is_done == 1")
-//    int getDoneNotesCount();
 }

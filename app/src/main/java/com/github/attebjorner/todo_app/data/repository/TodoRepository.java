@@ -3,6 +3,7 @@ package com.github.attebjorner.todo_app.data.repository;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.attebjorner.todo_app.data.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
@@ -30,11 +31,6 @@ public class TodoRepository
         return notes;
     }
 
-    public LiveData<List<Note>> getUndoneNotes()
-    {
-        return noteDao.getUndoneNotes();
-    }
-
     public void insert(Note note)
     {
         NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.insertNote(note));
@@ -54,10 +50,4 @@ public class TodoRepository
     {
         NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.delete(note));
     }
-
-//    public int getDoneCount() throws ExecutionException, InterruptedException
-//    {
-//        final Future<Integer> submit = NoteRoomDatabase.databaseWriterExecutor.submit(() -> noteDao.getDoneNotesCount());
-//        return submit.get();
-//    }
 }
