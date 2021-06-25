@@ -4,37 +4,26 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
-import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.databinding.FragmentCreateNoteBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
-import com.github.attebjorner.todo_app.view.activity.CreateNoteActivity;
 import com.github.attebjorner.todo_app.view.activity.MainActivity;
 
 import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.List;
 
-import viewmodel.NoteViewModel;
+import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 public class CreateNoteFragment extends Fragment
 {

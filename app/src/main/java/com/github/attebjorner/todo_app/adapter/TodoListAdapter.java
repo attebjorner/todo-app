@@ -24,16 +24,8 @@ import java.util.List;
 
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
-    private List<Note> notes;
-//    private final OnNoteClickListener noteClickListener;
-//    private final OnCheckboxClickListener checkboxClickListener;
-
-//    public TodoListAdapter(List<Note> notes, OnNoteClickListener noteClickListener, OnCheckboxClickListener checkboxClickListener)
-//    {
-//        this.notes = notes;
-//        this.noteClickListener = noteClickListener;
-//        this.checkboxClickListener = checkboxClickListener;
-//    }
+    private final List<Note> notes;
+    private static OnCheckboxClickListener checkboxClickListener;
 
 
     public TodoListAdapter(List<Note> notes)
@@ -72,7 +64,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         }
 
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
-                notes.get(position), holder
+                notes.get(position), holder, position
         ));
         holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
         holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position)));
@@ -84,12 +76,15 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         return notes.size();
     }
 
-    public final class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public void setCheckboxClickListener(OnCheckboxClickListener checkboxClickListener)
+    {
+        TodoListAdapter.checkboxClickListener = checkboxClickListener;
+    }
+
+    public static final class ViewHolder extends RecyclerView.ViewHolder
     {
         ImageButton imbCheckbox, imbInfo;
         TextView tvDescription, tvDeadline;
-//        OnNoteClickListener onNoteClickListener;
-//        OnCheckboxClickListener checkboxClickListener;
 
         public ViewHolder(@NonNull View itemView)
         {
@@ -98,12 +93,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             imbInfo = (ImageButton) itemView.findViewById(R.id.imbInfo);
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
             tvDeadline = (TextView) itemView.findViewById(R.id.tvDeadline);
-//            this.onNoteClickListener = noteClickListener;
         }
 
         public void setCheckboxDone(Note note)
         {
-
             imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
             if (note.getImportance() == Importance.HIGH)
             {
@@ -130,22 +123,19 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
         }
-
-        @Override
-        public void onClick(View v)
-        {
-        }
     }
 
     public static class CheckboxListener implements View.OnClickListener
     {
-        private Note note;
-        private ViewHolder holder;
+        private final Note note;
+        private final ViewHolder holder;
+        private final int pos;
 
-        public CheckboxListener(Note note, ViewHolder holder)
+        public CheckboxListener(Note note, ViewHolder holder, int pos)
         {
             this.note = note;
             this.holder = holder;
+            this.pos = pos;
         }
 
         @Override
@@ -169,12 +159,13 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 }
                 else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
             }
+            checkboxClickListener.onClick(note.isDone(), pos);
         }
     }
 
     public static class InfoListener implements View.OnClickListener
     {
-        private Note note;
+        private final Note note;
 
         public InfoListener(Note note)
         {

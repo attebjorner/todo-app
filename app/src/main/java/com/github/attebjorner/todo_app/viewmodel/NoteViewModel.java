@@ -1,4 +1,4 @@
-package viewmodel;
+package com.github.attebjorner.todo_app.viewmodel;
 
 import android.app.Application;
 
@@ -11,13 +11,13 @@ import com.github.attebjorner.todo_app.data.repository.TodoRepository;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class NoteViewModel extends AndroidViewModel
 {
-    public static TodoRepository repository;
-    public final LiveData<List<Note>> notes;
-    public MutableLiveData<Boolean> showDone = new MutableLiveData<>(false);
+    private static TodoRepository repository;
+    private final LiveData<List<Note>> notes;
+    private MutableLiveData<Boolean> showDone = new MutableLiveData<>(false);
+    private MutableLiveData<Long> doneCounter = new MutableLiveData<>(0L);
 
     public NoteViewModel(@NonNull Application application)
     {
@@ -34,6 +34,11 @@ public class NoteViewModel extends AndroidViewModel
     public MutableLiveData<Boolean> getShowDone()
     {
         return showDone;
+    }
+
+    public MutableLiveData<Long> getDoneCounter()
+    {
+        return doneCounter;
     }
 
     public static void insert(Note note)

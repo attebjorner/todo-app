@@ -3,6 +3,7 @@ package com.github.attebjorner.todo_app.view.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,11 +23,13 @@ import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
-import viewmodel.NoteViewModel;
+import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<Note> preNotes;
     private List<Note> curNotes;
+    private final Set<Note> notesToUpdate = new HashSet<>();
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
@@ -93,12 +97,23 @@ public class MainActivity extends AppCompatActivity
                     curNotes = notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList());
                 }
                 initRecyclerView(curNotes);
-                binding.tvDoneCounter.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
+                noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
             });
         });
 
+        noteViewModel.getDoneCounter().observe(this, aLong ->
+                binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
+
         setScrollingAnimation();
         setAddNewBtn();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        for (Note n : notesToUpdate) NoteViewModel.update(n);
+        noteViewModel.getDoneCounter().setValue(0L);
     }
 
     public void onClickVisibility(View view)
@@ -142,6 +157,11 @@ public class MainActivity extends AppCompatActivity
     {
         adapter = new TodoListAdapter(notes);
         binding.rvTodo.setAdapter(adapter);
+        adapter.setCheckboxClickListener((isDone, pos) ->
+        {
+            if (isDone) setNoteDone(pos);
+            else setNoteUndone(pos);
+        });
     }
 
     private void deleteNote(int pos)
@@ -150,10 +170,24 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyItemRemoved(pos);
     }
 
+    private void setNoteUndone(int pos)
+    {
+        curNotes.get(pos).setDone(false);
+        NoteViewModel.update(curNotes.get(pos));
+//        notesToUpdate.remove(curNotes.get(pos));
+//        noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        adapter.notifyDataSetChanged();
+    }
+
     private void setNoteDone(int pos)
     {
-        curNotes.get(pos).setDone(true);
-        NoteViewModel.update(curNotes.get(pos));
+        if (!notesToUpdate.contains(curNotes.get(pos)))
+        {
+            curNotes.get(pos).setDone(true);
+            NoteViewModel.update(curNotes.get(pos));
+//            notesToUpdate.add(curNotes.get(pos));
+//            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() + 1);
+        }
         adapter.notifyDataSetChanged();
     }
 
