@@ -3,7 +3,6 @@ package com.github.attebjorner.todo_app.view.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,14 +18,12 @@ import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.util.TinyDB;
-import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
+import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import viewmodel.NoteViewModel;
@@ -38,7 +35,6 @@ public class MainActivity extends AppCompatActivity
 
     private List<Note> preNotes;
     private List<Note> curNotes;
-//    private TinyDB tinyDB;
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
@@ -90,24 +86,16 @@ public class MainActivity extends AppCompatActivity
                 {
                     binding.imbVisible.setImageResource(VISIBLE_R[1]);
                     curNotes = notes;
-//                    initRecyclerView(curNotes);
                 }
                 else
                 {
                     binding.imbVisible.setImageResource(VISIBLE_R[0]);
                     curNotes = notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList());
-//                    initRecyclerView(curNotes);
                 }
                 initRecyclerView(curNotes);
                 binding.tvDoneCounter.setText(getString(R.string.done, notes.stream().filter(Note::isDone).count()));
             });
         });
-
-//        binding.imbVisible.setImageResource(VISIBLE_R[noteViewModel.getShowDone().getValue() ? 1 : 0]);
-//        if (!showDone)
-//        {
-//            doneNotesCount = preNotes.stream().filter(Note::isDone).count();
-//        }
 
         setScrollingAnimation();
         setAddNewBtn();
@@ -115,13 +103,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickVisibility(View view)
     {
-//        showDone = !showDone;
-//        binding.imbVisible.setImageResource(VISIBLE_R[noteViewModel.getShowDone().getValue() ? 1 : 0]);
-//        if (!showDone) doneNotesCount = notes.stream().filter(Note::isDone).count();
-//        doneNotesCount = 0;
-//        tinyDB.putBoolean("showDone", showDone);
         noteViewModel.getShowDone().setValue(!noteViewModel.getShowDone().getValue());
-//        initRecyclerView();
     }
 
     public void onClickCreateNote(View view)
@@ -158,23 +140,8 @@ public class MainActivity extends AppCompatActivity
 
     private void initRecyclerView(List<Note> notes)
     {
-//        LinearLayoutManager llManager = new LinearLayoutManager(
-//                this, LinearLayoutManager.VERTICAL, false
-//        );
-//        binding.rvTodo.setLayoutManager(llManager);
-//        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvTodo);
-//        adapter = new TodoListAdapter(
-//                showDone ? preNotes : preNotes.stream()
-//                        .filter(x -> !x.isDone())
-//                        .collect(Collectors.toList())
-//        );
         adapter = new TodoListAdapter(notes);
         binding.rvTodo.setAdapter(adapter);
-//        adapter.setOnCheckboxListener(d ->
-//        {
-//            doneNotesCount += d;
-//            binding.tvDoneCounter.setText(getString(R.string.done, doneNotesCount));
-//        });
     }
 
     private void deleteNote(int pos)

@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.view.adapter;
+package com.github.attebjorner.todo_app.adapter;
 
 import android.content.Intent;
 import android.graphics.Paint;
@@ -10,12 +10,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.ListMenuItemView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.databinding.ListitemBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
@@ -27,7 +25,16 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private List<Note> notes;
-//    private static OnCheckboxListener onCheckboxListener;
+//    private final OnNoteClickListener noteClickListener;
+//    private final OnCheckboxClickListener checkboxClickListener;
+
+//    public TodoListAdapter(List<Note> notes, OnNoteClickListener noteClickListener, OnCheckboxClickListener checkboxClickListener)
+//    {
+//        this.notes = notes;
+//        this.noteClickListener = noteClickListener;
+//        this.checkboxClickListener = checkboxClickListener;
+//    }
+
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -77,10 +84,12 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         return notes.size();
     }
 
-    public final static class ViewHolder extends RecyclerView.ViewHolder
+    public final class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         ImageButton imbCheckbox, imbInfo;
         TextView tvDescription, tvDeadline;
+//        OnNoteClickListener onNoteClickListener;
+//        OnCheckboxClickListener checkboxClickListener;
 
         public ViewHolder(@NonNull View itemView)
         {
@@ -89,6 +98,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             imbInfo = (ImageButton) itemView.findViewById(R.id.imbInfo);
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
             tvDeadline = (TextView) itemView.findViewById(R.id.tvDeadline);
+//            this.onNoteClickListener = noteClickListener;
         }
 
         public void setCheckboxDone(Note note)
@@ -103,7 +113,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tvDescription.setPaintFlags(
                     tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
             );
-//            onCheckboxListener.onClick(1);
         }
 
         public void setAsImportant(String text)
@@ -121,17 +130,12 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
         }
+
+        @Override
+        public void onClick(View v)
+        {
+        }
     }
-
-//    public interface OnCheckboxListener
-//    {
-//        void onClick(int d);
-//    }
-
-//    public void setOnCheckboxListener(OnCheckboxListener listener)
-//    {
-//        onCheckboxListener = listener;
-//    }
 
     public static class CheckboxListener implements View.OnClickListener
     {
@@ -164,7 +168,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                     holder.setAsOutdated();
                 }
                 else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
-//                onCheckboxListener.onClick(-1);
             }
         }
     }
@@ -172,21 +175,20 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static class InfoListener implements View.OnClickListener
     {
         private Note note;
-//        private int pos;
 
         public InfoListener(Note note)
         {
             this.note = note;
-//            this.pos = pos;
         }
 
         @Override
         public void onClick(View v)
         {
-//            TinyDB tinyDB = new TinyDB(v.getContext());
+            TinyDB tinyDB = new TinyDB(v.getContext());
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
-            intent.putExtra("id", note.getId());
+            tinyDB.putObject("editNote", note);
+//            intent.putExtra("id", note.getId());
             v.getContext().startActivity(intent);
         }
     }

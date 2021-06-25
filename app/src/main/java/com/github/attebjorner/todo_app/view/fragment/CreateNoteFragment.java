@@ -39,12 +39,8 @@ import viewmodel.NoteViewModel;
 public class CreateNoteFragment extends Fragment
 {
     private boolean isNew;
-    private TinyDB tinyDB;
-//    private List<Note> notes;
-//    private int pos = -1;
-    private long noteId;
+    private Note note;
     private LocalDate date;
-    private NoteViewModel noteViewModel;
 
     private FragmentCreateNoteBinding binding;
 
@@ -61,15 +57,11 @@ public class CreateNoteFragment extends Fragment
         binding = FragmentCreateNoteBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
 
-        noteViewModel = new ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication()).create(NoteViewModel.class);
-
-        tinyDB = new TinyDB(getContext());
+        TinyDB tinyDB = new TinyDB(getContext());
 
         isNew = tinyDB.getBoolean("isNewFragment");
-        if (!isNew) noteId = tinyDB.getLong("noteId");
-//        if (!isNew) pos = tinyDB.getInt("posFragment");
+        if (!isNew) note = tinyDB.getObject("editNote", Note.class);
 
-//        notes = tinyDB.getListObject("notes", Note.class);
         setImportanceSpinner();
         if (!isNew)
         {
@@ -116,32 +108,15 @@ public class CreateNoteFragment extends Fragment
                 (binding.tvDate.getText().length() == 0) ? null : date,
                 Importance.values()[(int) binding.spinImportance.getSelectedItemId()]
         );
-//        notes.add(note);
         NoteViewModel.insert(note);
-//        tinyDB.putListObject("notes", notes);
     }
 
     public void onSaveNote(View view)
     {
-//        Note note = noteViewModel.get(noteId);
-        final Note[] tnote = new Note[1];
-        noteViewModel.get(noteId).observe(getViewLifecycleOwner(), new Observer<Note>()
-        {
-            @Override
-            public void onChanged(Note note)
-            {
-//                tnote[0] = note;
-                note.setDescription(binding.etDescription.getText().toString());
-                note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
-                note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
-                NoteViewModel.update(note);
-            }
-        });
-//        note.setDescription(binding.etDescription.getText().toString());
-//        note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
-//        note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
-//        NoteViewModel.update(note);
-//        tinyDB.putListObject("notes", notes);
+        note.setDescription(binding.etDescription.getText().toString());
+        note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
+        note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
+        NoteViewModel.update(note);
     }
 
     private void setImportanceSpinner()
@@ -158,30 +133,26 @@ public class CreateNoteFragment extends Fragment
     {
         binding.tvDelete.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
         binding.imbDelete.setBackgroundResource(R.drawable.ic_delete);
+
+        View.OnClickListener deleteListener = v ->
+        {
+            NoteViewModel.delete(note);
+            Intent intent = new Intent(v.getContext(), MainActivity.class);
+            v.getContext().startActivity(intent);
+        };
+
+        binding.imbDelete.setOnClickListener(deleteListener);
+        binding.tvDelete.setOnClickListener(deleteListener);
     }
 
     private void setNoteData()
     {
-        tinyDB = new TinyDB(getContext());
-//        Note note = tinyDB.getObject("editNote", Note.class);
-//        Note n = noteViewModel.get(noteId);
-//        Note note = noteViewModel.get(noteId);
-        noteViewModel.get(noteId).observe(getViewLifecycleOwner(), note ->
+        binding.etDescription.setText(note.getDescription());
+        binding.spinImportance.setSelection(note.getImportance().getValue());
+        if (note.getDeadline() != null)
         {
-            binding.etDescription.setText(note.getDescription());
-            binding.spinImportance.setSelection(note.getImportance().getValue());
-            if (note.getDeadline() != null)
-            {
-                binding.tvDate.setText(note.getDeadline().toString());
-                binding.switchDate.setChecked(true);
-            }
-        });
-//        binding.etDescription.setText(note.getDescription());
-//        binding.spinImportance.setSelection(note.getImportance().getValue());
-//        if (note.getDeadline() != null)
-//        {
-//            binding.tvDate.setText(note.getDeadline().toString());
-//            binding.switchDate.setChecked(true);
-//        }
+            binding.tvDate.setText(note.getDeadline().toString());
+            binding.switchDate.setChecked(true);
+        }
     }
 }
