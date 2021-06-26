@@ -89,10 +89,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         public ViewHolder(@NonNull View itemView)
         {
             super(itemView);
-            imbCheckbox = (ImageButton) itemView.findViewById(R.id.imbCheckbox);
-            imbInfo = (ImageButton) itemView.findViewById(R.id.imbInfo);
-            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
-            tvDeadline = (TextView) itemView.findViewById(R.id.tvDeadline);
+            imbCheckbox = itemView.findViewById(R.id.imbCheckbox);
+            imbInfo = itemView.findViewById(R.id.imbInfo);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvDeadline = itemView.findViewById(R.id.tvDeadline);
         }
 
         public void setCheckboxDone(Note note)

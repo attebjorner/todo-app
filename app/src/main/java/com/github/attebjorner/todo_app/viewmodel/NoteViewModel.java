@@ -16,8 +16,8 @@ public class NoteViewModel extends AndroidViewModel
 {
     private static TodoRepository repository;
     private final LiveData<List<Note>> notes;
-    private MutableLiveData<Boolean> showDone = new MutableLiveData<>(false);
-    private MutableLiveData<Long> doneCounter = new MutableLiveData<>(0L);
+    private final MutableLiveData<Boolean> showDone = new MutableLiveData<>(false);
+    private final MutableLiveData<Long> doneCounter = new MutableLiveData<>(0L);
 
     public NoteViewModel(@NonNull Application application)
     {

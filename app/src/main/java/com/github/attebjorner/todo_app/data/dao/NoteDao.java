@@ -32,4 +32,7 @@ public interface NoteDao
 
     @Delete
     void delete(Note note);
+
+    @Query("SELECT COUNT(notes.id) FROM notes WHERE notes.is_done == 0 AND notes.deadline == :epochDay")
+    int getUndoneNotesByDate(long epochDay);
 }

@@ -3,16 +3,12 @@ package com.github.attebjorner.todo_app.data.repository;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.github.attebjorner.todo_app.data.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.NoteRoomDatabase;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class TodoRepository
 {
@@ -49,5 +45,10 @@ public class TodoRepository
     public void delete(Note note)
     {
         NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.delete(note));
+    }
+
+    public int getUndoneNotesByDate(long epochday)
+    {
+        return noteDao.getUndoneNotesByDate(epochday);
     }
 }

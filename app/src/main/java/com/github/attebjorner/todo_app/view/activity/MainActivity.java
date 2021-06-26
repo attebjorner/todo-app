@@ -1,35 +1,38 @@
 package com.github.attebjorner.todo_app.view.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.graphics.Canvas;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
-
 import com.github.attebjorner.todo_app.R;
+import com.github.attebjorner.todo_app.notification.ReminderBroadcast;
+import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
+import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
-import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -86,16 +89,11 @@ public class MainActivity extends AppCompatActivity
         {
             noteViewModel.getNotes().observe(MainActivity.this, notes ->
             {
-                if (showDon)
-                {
-                    binding.imbVisible.setImageResource(VISIBLE_R[1]);
-                    curNotes = notes;
-                }
-                else
-                {
-                    binding.imbVisible.setImageResource(VISIBLE_R[0]);
-                    curNotes = notes.stream().filter(n -> !n.isDone()).collect(Collectors.toList());
-                }
+                binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
+                if (showDon) curNotes = notes;
+                else curNotes = notes.stream()
+                        .filter(n -> !n.isDone())
+                        .collect(Collectors.toList());
                 initRecyclerView(curNotes);
                 noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
             });
@@ -103,6 +101,32 @@ public class MainActivity extends AppCompatActivity
 
         noteViewModel.getDoneCounter().observe(this, aLong ->
                 binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
+
+        binding.tvDoneCounter.setOnClickListener(v ->
+        {
+            long notesToDo = curNotes.stream()
+                    .filter(x -> !x.isDone()
+                            && x.getDeadline() != null
+                            && x.getDeadline().isEqual(LocalDate.now()))
+                    .count();
+            Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, ReminderBroadcast.class);
+            intent.putExtra("todoCount", notesToDo);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+//            long curtime = System.currentTimeMillis();
+//            long tensec = 1000 * 10;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 10);
+            alarmManager.setInexactRepeating(
+                    AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent
+            );
+
+
+//            alarmManager.set(AlarmManager.RTC_WAKEUP, curtime + tensec, pendingIntent);
+        });
 
         setScrollingAnimation();
         setAddNewBtn();
@@ -112,8 +136,8 @@ public class MainActivity extends AppCompatActivity
     protected void onPause()
     {
         super.onPause();
-        for (Note n : notesToUpdate) NoteViewModel.update(n);
-        noteViewModel.getDoneCounter().setValue(0L);
+//        for (Note n : notesToUpdate) NoteViewModel.update(n);
+//        noteViewModel.getDoneCounter().setValue(0L);
     }
 
     public void onClickVisibility(View view)
@@ -140,8 +164,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setAddNewBtn()
     {
-        TextView tvNew = (TextView) findViewById(R.id.tvNew);
-        tvNew.setOnClickListener(this::onClickCreateNote);
+        binding.tvNew.setOnClickListener(this::onClickCreateNote);
     }
 
     private void preconfigRecyclerView()
