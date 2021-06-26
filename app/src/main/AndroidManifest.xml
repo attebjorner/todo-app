@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.attebjorner.todo_app">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:name=".notification.App"
         android:allowBackup="true"
@@ -10,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Todoapp">
-        <activity android:name=".view.activity.CreateNoteActivity"></activity>
+        <activity android:name=".view.activity.CreateNoteActivity" />
         <activity android:name=".view.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,7 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".notification.ReminderBroadcast" />
+
+        <service
+            android:name=".notification.NotificationJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver android:name=".notification.NotificationBroadcast" />
     </application>
 
 </manifest>

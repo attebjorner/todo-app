@@ -1,12 +1,12 @@
 package com.github.attebjorner.todo_app.view.activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,16 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.notification.ReminderBroadcast;
 import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
-import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
+import com.github.attebjorner.todo_app.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,28 +42,28 @@ public class MainActivity extends AppCompatActivity
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
 
-    {
-        Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO);
-        doneLongNote.setDone(true);
-        preNotes = Arrays.asList(
-                new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
-                new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
-                new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
-                new Note("1+-", LocalDate.of(2021, 10, 5), Importance.LOW),
-                new Note("0+-", LocalDate.of(2021, 10, 3), Importance.NO),
-                new Note("0+-", LocalDate.of(2021, 10, 6), Importance.NO),
-                new Note("2--", null, Importance.HIGH),
-                new Note("1--", null, Importance.LOW),
-                new Note("0--", null, Importance.NO),
-                new Note("2--", null, Importance.HIGH),
-                new Note("1--", null, Importance.LOW),
-                new Note("0--", null, Importance.NO),
-                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO),
-                new Note("nte 3", LocalDate.now(), Importance.NO),
-                doneLongNote,
-                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2020, 10, 12), Importance.HIGH)
-        );
-    }
+//    {
+//        Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO);
+//        doneLongNote.setDone(true);
+//        preNotes = Arrays.asList(
+//                new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
+//                new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
+//                new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
+//                new Note("1+-", LocalDate.of(2021, 10, 5), Importance.LOW),
+//                new Note("0+-", LocalDate.of(2021, 10, 3), Importance.NO),
+//                new Note("0+-", LocalDate.of(2021, 10, 6), Importance.NO),
+//                new Note("2--", null, Importance.HIGH),
+//                new Note("1--", null, Importance.LOW),
+//                new Note("0--", null, Importance.NO),
+//                new Note("2--", null, Importance.HIGH),
+//                new Note("1--", null, Importance.LOW),
+//                new Note("0--", null, Importance.NO),
+//                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO),
+//                new Note("nte 3", LocalDate.now(), Importance.NO),
+//                doneLongNote,
+//                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2020, 10, 12), Importance.HIGH)
+//        );
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +73,7 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        scheduleJob();
 
         noteViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(NoteViewModel.class);
 //        for (Note n : preNotes)
@@ -102,43 +99,31 @@ public class MainActivity extends AppCompatActivity
         noteViewModel.getDoneCounter().observe(this, aLong ->
                 binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
 
-        binding.tvDoneCounter.setOnClickListener(v ->
-        {
-            long notesToDo = curNotes.stream()
-                    .filter(x -> !x.isDone()
-                            && x.getDeadline() != null
-                            && x.getDeadline().isEqual(LocalDate.now()))
-                    .count();
-            Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainActivity.this, ReminderBroadcast.class);
-            intent.putExtra("todoCount", notesToDo);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//            long curtime = System.currentTimeMillis();
-//            long tensec = 1000 * 10;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 10);
-            alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY, pendingIntent
-            );
-
-
-//            alarmManager.set(AlarmManager.RTC_WAKEUP, curtime + tensec, pendingIntent);
-        });
+//        binding.tvDoneCounter.setOnClickListener(v -> scheduleJob());
 
         setScrollingAnimation();
         setAddNewBtn();
     }
 
-    @Override
-    protected void onPause()
+    public void scheduleJob()
     {
-        super.onPause();
-//        for (Note n : notesToUpdate) NoteViewModel.update(n);
-//        noteViewModel.getDoneCounter().setValue(0L);
+        ComponentName componentName = new ComponentName(this, NotificationJobService.class);
+        JobInfo info = new JobInfo.Builder(123, componentName)
+                .setPeriodic(1000 * 60 * 60 * 24)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
+                .setPersisted(true)
+                .build();
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.schedule(info);
     }
+
+//    @Override
+//    protected void onPause()
+//    {
+//        super.onPause();
+////        for (Note n : notesToUpdate) NoteViewModel.update(n);
+////        noteViewModel.getDoneCounter().setValue(0L);
+//    }
 
     public void onClickVisibility(View view)
     {
