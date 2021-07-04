@@ -25,9 +25,12 @@ import com.github.attebjorner.todo_app.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<Note> preNotes;
     private List<Note> curNotes;
-    private final Set<Note> notesToUpdate = new HashSet<>();
+    private final Map<Long, Note> notesToUpdate = new HashMap<>();
     private final Set<Note> notesToDelete = new HashSet<>();
     private TodoListAdapter adapter;
 
@@ -103,14 +106,12 @@ public class MainActivity extends AppCompatActivity
         scheduler.schedule(info);
     }
 
-//    @Override
-//    protected void onPause()
-//    {
-//        super.onPause();
-//        for (Note n : notesToUpdate) NoteViewModel.update(n);
-//        for (Note n : notesToDelete) NoteViewModel.delete(n);
-//        noteViewModel.getDoneCounter().setValue(0L);
-//    }
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        updateDatabaseData();
+    }
 
     public void onClickVisibility(View view)
     {
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity
     {
         noteViewModel.getShowDone().observe(this, showDon ->
         {
+            updateDatabaseData();
             noteViewModel.getNotes().observe(MainActivity.this, notes ->
             {
                 binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
@@ -157,6 +159,13 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void updateDatabaseData()
+    {
+        for (Note n : notesToUpdate.values()) NoteViewModel.update(n);
+        for (Note n : notesToDelete) NoteViewModel.delete(n);
+        noteViewModel.getDoneCounter().setValue(0L);
+    }
+
     private void setAddNewBtn()
     {
         binding.tvNew.setOnClickListener(this::onClickCreateNote);
@@ -177,34 +186,37 @@ public class MainActivity extends AppCompatActivity
         binding.rvTodo.setAdapter(adapter);
         adapter.setCheckboxClickListener((isDone, pos) ->
         {
-            if (isDone) setNoteDone(pos);
+            if (!isDone) setNoteDone(pos);
             else setNoteUndone(pos);
         });
     }
 
     private void deleteNote(int pos)
     {
-        NoteViewModel.delete(curNotes.get(pos));
+        if (curNotes.get(pos).isDone()) noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        notesToDelete.add(curNotes.get(pos));
+        curNotes.remove(pos);
         adapter.notifyItemRemoved(pos);
     }
 
     private void setNoteUndone(int pos)
     {
-        curNotes.get(pos).setDone(false);
-        NoteViewModel.update(curNotes.get(pos));
-//        notesToUpdate.remove(curNotes.get(pos));
-//        noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        if (curNotes.get(pos).isDone())
+        {
+            curNotes.get(pos).setDone(false);
+            notesToUpdate.put(curNotes.get(pos).getId(), curNotes.get(pos));
+            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        }
         adapter.notifyDataSetChanged();
     }
 
     private void setNoteDone(int pos)
     {
-        if (!notesToUpdate.contains(curNotes.get(pos)))
+        if (!curNotes.get(pos).isDone())
         {
             curNotes.get(pos).setDone(true);
-            NoteViewModel.update(curNotes.get(pos));
-//            notesToUpdate.add(curNotes.get(pos));
-//            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() + 1);
+            notesToUpdate.put(curNotes.get(pos).getId(), curNotes.get(pos));
+            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() + 1);
         }
         adapter.notifyDataSetChanged();
     }

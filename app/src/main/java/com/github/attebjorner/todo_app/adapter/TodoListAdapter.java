@@ -141,7 +141,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         @Override
         public void onClick(View v)
         {
-            note.setDone(!note.isDone());
+//            note.setDone(!note.isDone());
             if (note.isDone())
             {
                 holder.setCheckboxDone(note);
