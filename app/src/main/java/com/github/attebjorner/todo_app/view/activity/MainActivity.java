@@ -184,11 +184,7 @@ public class MainActivity extends AppCompatActivity
     {
         adapter = new TodoListAdapter(notes);
         binding.rvTodo.setAdapter(adapter);
-        adapter.setCheckboxClickListener((isDone, pos) ->
-        {
-            if (!isDone) setNoteDone(pos);
-            else setNoteUndone(pos);
-        });
+        adapter.setCheckboxClickListener((isDone, pos) -> changeNoteState(pos, isDone));
     }
 
     private void deleteNote(int pos)
@@ -199,24 +195,15 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyItemRemoved(pos);
     }
 
-    private void setNoteUndone(int pos)
+    private void changeNoteState(int pos, boolean isDone)
     {
-        if (curNotes.get(pos).isDone())
+        if (curNotes.get(pos).isDone() == isDone)
         {
-            curNotes.get(pos).setDone(false);
+            curNotes.get(pos).setDone(!isDone);
             notesToUpdate.put(curNotes.get(pos).getId(), curNotes.get(pos));
-            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    private void setNoteDone(int pos)
-    {
-        if (!curNotes.get(pos).isDone())
-        {
-            curNotes.get(pos).setDone(true);
-            notesToUpdate.put(curNotes.get(pos).getId(), curNotes.get(pos));
-            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() + 1);
+            noteViewModel.getDoneCounter().setValue(
+                    noteViewModel.getDoneCounter().getValue() + (!isDone ? 1 : -1)
+            );
         }
         adapter.notifyDataSetChanged();
     }
@@ -239,7 +226,7 @@ public class MainActivity extends AppCompatActivity
             switch (direction)
             {
                 case ItemTouchHelper.RIGHT:
-                    setNoteDone(viewHolder.getAdapterPosition());
+                    changeNoteState(viewHolder.getAdapterPosition(), false);
                     break;
                 case ItemTouchHelper.LEFT:
                     deleteNote(viewHolder.getAdapterPosition());
