@@ -5,8 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDateTime;
 
 @Entity(tableName = "notes")
 public class Note
@@ -23,12 +22,20 @@ public class Note
 
     private Importance importance;
 
+    @ColumnInfo(name = "creation_date")
+    private LocalDateTime creationDate;
+
+    @ColumnInfo(name = "last_update")
+    private LocalDateTime lastUpdate;
+
     public Note(String description, LocalDate deadline, Importance importance)
     {
         this.description = description;
         this.isDone = false;
         this.deadline = deadline;
         this.importance = importance;
+        creationDate = LocalDateTime.now();
+        lastUpdate = LocalDateTime.now();
     }
 
     public long getId()
@@ -79,5 +86,25 @@ public class Note
     public void setImportance(Importance importance)
     {
         this.importance = importance;
+    }
+
+    public LocalDateTime getCreationDate()
+    {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate)
+    {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getLastUpdate()
+    {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(LocalDateTime lastUpdate)
+    {
+        this.lastUpdate = lastUpdate;
     }
 }

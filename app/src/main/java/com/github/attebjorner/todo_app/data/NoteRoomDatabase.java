@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.util;
+package com.github.attebjorner.todo_app.data;
 
 import android.content.Context;
 
@@ -11,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.github.attebjorner.todo_app.data.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
+import com.github.attebjorner.todo_app.util.RoomConverters;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,10 +20,10 @@ import java.util.concurrent.Executors;
 @TypeConverters({RoomConverters.class})
 public abstract class NoteRoomDatabase extends RoomDatabase
 {
-    public static final int NUMBER_OF_THREADS = 4;
-    public static final String DATABASE_NAME = "todo_db";
+    private static final int NUMBER_OF_THREADS = 4;
+    private static final String DATABASE_NAME = "todo_db";
     private static volatile NoteRoomDatabase INSTANCE;
-    public static final ExecutorService databaseWriterExecutor
+    private static final ExecutorService databaseWriterExecutor
             = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     public static final RoomDatabase.Callback callback = new RoomDatabase.Callback()
@@ -57,4 +58,9 @@ public abstract class NoteRoomDatabase extends RoomDatabase
     }
 
     public abstract NoteDao noteDao();
+
+    public static ExecutorService getDatabaseWriterExecutor()
+    {
+        return databaseWriterExecutor;
+    }
 }

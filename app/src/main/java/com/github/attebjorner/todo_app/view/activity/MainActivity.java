@@ -19,10 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
+import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     private List<Note> preNotes;
     private List<Note> curNotes;
     private final Set<Note> notesToUpdate = new HashSet<>();
+    private final Set<Note> notesToDelete = new HashSet<>();
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        scheduleJob();
+        scheduleNotificationJob();
 
         noteViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(NoteViewModel.class);
 //        for (Note n : preNotes)
@@ -81,31 +85,13 @@ public class MainActivity extends AppCompatActivity
 //            NoteViewModel.insert(n);
 //        }
         preconfigRecyclerView();
-
-        noteViewModel.getShowDone().observe(this, showDon ->
-        {
-            noteViewModel.getNotes().observe(MainActivity.this, notes ->
-            {
-                binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
-                if (showDon) curNotes = notes;
-                else curNotes = notes.stream()
-                        .filter(n -> !n.isDone())
-                        .collect(Collectors.toList());
-                initRecyclerView(curNotes);
-                noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
-            });
-        });
-
-        noteViewModel.getDoneCounter().observe(this, aLong ->
-                binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
-
-//        binding.tvDoneCounter.setOnClickListener(v -> scheduleJob());
-
+        setVisibilityAndList();
+        setDoneCounter();
         setScrollingAnimation();
         setAddNewBtn();
     }
 
-    public void scheduleJob()
+    public void scheduleNotificationJob()
     {
         ComponentName componentName = new ComponentName(this, NotificationJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
@@ -121,8 +107,9 @@ public class MainActivity extends AppCompatActivity
 //    protected void onPause()
 //    {
 //        super.onPause();
-////        for (Note n : notesToUpdate) NoteViewModel.update(n);
-////        noteViewModel.getDoneCounter().setValue(0L);
+//        for (Note n : notesToUpdate) NoteViewModel.update(n);
+//        for (Note n : notesToDelete) NoteViewModel.delete(n);
+//        noteViewModel.getDoneCounter().setValue(0L);
 //    }
 
     public void onClickVisibility(View view)
@@ -135,6 +122,29 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(this, CreateNoteActivity.class);
         intent.putExtra("isNew", true);
         startActivity(intent);
+    }
+
+    private void setVisibilityAndList()
+    {
+        noteViewModel.getShowDone().observe(this, showDon ->
+        {
+            noteViewModel.getNotes().observe(MainActivity.this, notes ->
+            {
+                binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
+                if (showDon) curNotes = notes;
+                else curNotes = notes.stream()
+                        .filter(n -> !n.isDone())
+                        .collect(Collectors.toList());
+                initRecyclerView(curNotes);
+                noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
+            });
+        });
+    }
+
+    private void setDoneCounter()
+    {
+        noteViewModel.getDoneCounter().observe(this, aLong ->
+                binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
     }
 
     private void setScrollingAnimation()

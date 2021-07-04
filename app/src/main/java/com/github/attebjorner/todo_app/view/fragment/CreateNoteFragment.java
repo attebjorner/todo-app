@@ -31,6 +31,7 @@ public class CreateNoteFragment extends Fragment
     private boolean isNew;
     private Note note;
     private LocalDate date;
+    private DatePickerDialog datePicker;
 
     private FragmentCreateNoteBinding binding;
 
@@ -48,45 +49,19 @@ public class CreateNoteFragment extends Fragment
         View rootView = binding.getRoot();
 
         TinyDB tinyDB = new TinyDB(getContext());
-
         isNew = tinyDB.getBoolean("isNewFragment");
-        if (!isNew) note = tinyDB.getObject("editNote", Note.class);
 
-        setImportanceSpinner();
         if (!isNew)
         {
+            note = tinyDB.getObject("editNote", Note.class);
             enableDelete();
             setNoteData();
         }
 
-        Calendar newCalendar = Calendar.getInstance();
-        DatePickerDialog datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
-                (view, year, monthOfYear, dayOfMonth) ->
-        {
-            date = LocalDate.of(year, monthOfYear + 1, dayOfMonth);
-            binding.tvDate.setText(date.toString());
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH),
-                newCalendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        binding.switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {
-            if (isChecked) datePicker.show();
-            else
-            {
-                date = null;
-                binding.tvDate.setText("");
-            }
-        });
-
-        Button btnSave = (Button) getActivity().findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(v ->
-        {
-            if (isNew) onCreateNew(v);
-            else onSaveNote(v);
-            Intent intent = new Intent(v.getContext(), MainActivity.class);
-            v.getContext().startActivity(intent);
-        });
+        setImportanceSpinner();
+        setDatePickerDialog();
+        setSwitchDate();
+        setSaveButton();
 
         return rootView;
     }
@@ -107,6 +82,44 @@ public class CreateNoteFragment extends Fragment
         note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
         note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
         NoteViewModel.update(note);
+    }
+
+    private void setDatePickerDialog()
+    {
+        Calendar newCalendar = Calendar.getInstance();
+        datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
+                (view, year, monthOfYear, dayOfMonth) ->
+                {
+                    date = LocalDate.of(year, monthOfYear + 1, dayOfMonth);
+                    binding.tvDate.setText(date.toString());
+                }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH),
+                newCalendar.get(Calendar.DAY_OF_MONTH)
+        );
+    }
+
+    private void setSwitchDate()
+    {
+        binding.switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            if (isChecked) datePicker.show();
+            else
+            {
+                date = null;
+                binding.tvDate.setText("");
+            }
+        });
+    }
+
+    private void setSaveButton()
+    {
+        Button btnSave = (Button) getActivity().findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(v ->
+        {
+            if (isNew) onCreateNew(v);
+            else onSaveNote(v);
+            Intent intent = new Intent(v.getContext(), MainActivity.class);
+            v.getContext().startActivity(intent);
+        });
     }
 
     private void setImportanceSpinner()

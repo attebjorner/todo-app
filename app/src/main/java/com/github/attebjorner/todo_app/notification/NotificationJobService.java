@@ -30,19 +30,15 @@ public class NotificationJobService extends JobService
     private void doBackgroundWord(JobParameters params)
     {
         TodoRepository repository = new TodoRepository(getApplication());
-        new Thread(new Runnable()
+        new Thread(() ->
         {
-            @Override
-            public void run()
-            {
-                if (jobCancelled) return;
-                LocalDate day;
-                if (LocalTime.now().getHour() >= 10) day = LocalDate.now().plusDays(1);
-                else day = LocalDate.now();
-                int count = repository.getUndoneNotesByDate(day.toEpochDay());
-                if (count == 0) return;
-                createNotificationAlarm(count, day);
-            }
+            if (jobCancelled) return;
+            LocalDate day;
+            if (LocalTime.now().getHour() >= 10) day = LocalDate.now().plusDays(1);
+            else day = LocalDate.now();
+            int count = repository.getUndoneNotesByDate(day.toEpochDay());
+            if (count == 0) return;
+            createNotificationAlarm(count, day);
         }).start();
     }
 

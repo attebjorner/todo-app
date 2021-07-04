@@ -6,8 +6,9 @@ import androidx.lifecycle.LiveData;
 
 import com.github.attebjorner.todo_app.data.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.util.NoteRoomDatabase;
+import com.github.attebjorner.todo_app.data.NoteRoomDatabase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class TodoRepository
@@ -29,7 +30,7 @@ public class TodoRepository
 
     public void insert(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.insertNote(note));
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.insertNote(note));
     }
 
     public LiveData<Note> get(long id)
@@ -39,12 +40,13 @@ public class TodoRepository
 
     public void update(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.update(note));
+        note.setLastUpdate(LocalDateTime.now());
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.update(note));
     }
 
     public void delete(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.delete(note));
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.delete(note));
     }
 
     public int getUndoneNotesByDate(long epochday)
