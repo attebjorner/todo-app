@@ -10,6 +10,7 @@
     <string name="importance">Важность</string>
     <string name="do_before">Сделать до</string>
     <string name="delete">Удалить</string>
+    <string name="enter_note_hint">Что надо сделать…</string>
     <string-array name="spinImportance">
         <item>Нет</item>
         <item>Низкий</item>

@@ -7,7 +7,7 @@ import android.app.job.JobService;
 import android.content.Intent;
 import android.util.Log;
 
-import com.github.attebjorner.todo_app.data.repository.TodoRepository;
+import com.github.attebjorner.todo_app.data.repository.NoteRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class NotificationJobService extends JobService
 
     private void doBackgroundWord(JobParameters params)
     {
-        TodoRepository repository = new TodoRepository(getApplication());
+        NoteRepository repository = new NoteRepository(getApplication());
         new Thread(() ->
         {
             if (jobCancelled) return;

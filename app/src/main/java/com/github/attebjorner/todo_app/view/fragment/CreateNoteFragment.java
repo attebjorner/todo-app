@@ -29,8 +29,11 @@ import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 public class CreateNoteFragment extends Fragment
 {
     private boolean isNew;
+
     private Note note;
+
     private LocalDate date;
+
     private DatePickerDialog datePicker;
 
     private FragmentCreateNoteBinding binding;

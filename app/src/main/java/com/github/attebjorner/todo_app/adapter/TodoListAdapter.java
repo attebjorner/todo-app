@@ -25,8 +25,8 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private final List<Note> notes;
-    private static OnCheckboxClickListener checkboxClickListener;
 
+    private static OnCheckboxClickListener checkboxClickListener;
 
     public TodoListAdapter(List<Note> notes)
     {
@@ -84,6 +84,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static final class ViewHolder extends RecyclerView.ViewHolder
     {
         ImageButton imbCheckbox, imbInfo;
+
         TextView tvDescription, tvDeadline;
 
         public ViewHolder(@NonNull View itemView)
@@ -128,7 +129,9 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static class CheckboxListener implements View.OnClickListener
     {
         private final Note note;
+
         private final ViewHolder holder;
+
         private final int pos;
 
         public CheckboxListener(Note note, ViewHolder holder, int pos)

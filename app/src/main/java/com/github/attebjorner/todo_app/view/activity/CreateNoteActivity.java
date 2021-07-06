@@ -15,6 +15,7 @@ import com.github.attebjorner.todo_app.view.fragment.CreateNoteFragment;
 public class CreateNoteActivity extends AppCompatActivity
 {
     private Intent intent;
+
     private boolean isNew;
 
     @Override

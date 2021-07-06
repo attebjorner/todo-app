@@ -1,17 +1,22 @@
 package com.github.attebjorner.todo_app.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.github.attebjorner.todo_app.util.RoomConverters;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity(tableName = "notes")
 public class Note
 {
-    @PrimaryKey(autoGenerate = true)
-    private long id;
+    @PrimaryKey
+    @NonNull
+    private UUID id;
 
     private String description;
 
@@ -30,6 +35,7 @@ public class Note
 
     public Note(String description, LocalDate deadline, Importance importance)
     {
+        this.id = UUID.randomUUID();
         this.description = description;
         this.isDone = false;
         this.deadline = deadline;
@@ -38,12 +44,13 @@ public class Note
         lastUpdate = LocalDateTime.now();
     }
 
-    public long getId()
+    @NonNull
+    public UUID getId()
     {
         return id;
     }
 
-    public void setId(long id)
+    public void setId(@NonNull UUID id)
     {
         this.id = id;
     }

@@ -22,6 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:hint="@string/enter_note_hint"
+            android:textColorHint="@color/label_tertiary"
             android:ems="10"
             android:inputType="textMultiLine" />
     </androidx.cardview.widget.CardView>

@@ -3,6 +3,9 @@ package com.github.attebjorner.todo_app.notification;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.os.Build;
 
 public class App extends Application

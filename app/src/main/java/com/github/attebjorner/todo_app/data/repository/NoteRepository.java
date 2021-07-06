@@ -11,12 +11,13 @@ import com.github.attebjorner.todo_app.data.NoteRoomDatabase;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class TodoRepository
+public class NoteRepository
 {
     private final NoteDao noteDao;
+
     private final LiveData<List<Note>> notes;
 
-    public TodoRepository(Application application)
+    public NoteRepository(Application application)
     {
         NoteRoomDatabase database = NoteRoomDatabase.getDatabase(application);
         this.noteDao = database.noteDao();

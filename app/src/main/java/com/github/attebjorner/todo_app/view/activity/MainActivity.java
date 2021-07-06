@@ -25,13 +25,13 @@ import com.github.attebjorner.todo_app.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -39,12 +39,17 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 public class MainActivity extends AppCompatActivity
 {
     private ActivityMainBinding binding;
+
     private NoteViewModel noteViewModel;
 
     private List<Note> preNotes;
+
     private List<Note> curNotes;
-    private final Map<Long, Note> notesToUpdate = new HashMap<>();
+
+    private final Map<UUID, Note> notesToUpdate = new HashMap<>();
+
     private final Set<Note> notesToDelete = new HashSet<>();
+
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
@@ -88,7 +93,7 @@ public class MainActivity extends AppCompatActivity
 //            NoteViewModel.insert(n);
 //        }
         preconfigRecyclerView();
-        setVisibilityAndList();
+        observeVisibilityAndList();
         setDoneCounter();
         setScrollingAnimation();
         setAddNewBtn();
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity
     {
         ComponentName componentName = new ComponentName(this, NotificationJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
-                .setPeriodic(1000 * 60 * 60 * 24)
+                .setPeriodic(1000 * 60 * 60 * 8)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
                 .setPersisted(true)
                 .build();
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void setVisibilityAndList()
+    private void observeVisibilityAndList()
     {
         noteViewModel.getShowDone().observe(this, showDon ->
         {
@@ -163,7 +168,6 @@ public class MainActivity extends AppCompatActivity
     {
         for (Note n : notesToUpdate.values()) NoteViewModel.update(n);
         for (Note n : notesToDelete) NoteViewModel.delete(n);
-        noteViewModel.getDoneCounter().setValue(0L);
     }
 
     private void setAddNewBtn()

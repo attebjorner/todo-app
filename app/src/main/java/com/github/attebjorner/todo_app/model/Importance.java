@@ -4,8 +4,8 @@ import java.util.Map;
 
 public enum Importance
 {
-    NO(0, "low"),
-    LOW(1, "basic"),
+    NO(0, "basic"),
+    LOW(1, "low"),
     HIGH(2, "important");
 
     private final int value;
@@ -19,8 +19,8 @@ public enum Importance
     );
 
     private static final Map<String, Importance> BY_API_STRING = Map.of(
-            "low", NO,
-            "basic", LOW,
+            "basic", NO,
+            "low", LOW,
             "important", HIGH
     );
 
@@ -33,6 +33,11 @@ public enum Importance
     public int getValue()
     {
         return value;
+    }
+
+    public String getApiString()
+    {
+        return apiString;
     }
 
     static public Importance valueOfInt(int value)

@@ -1,6 +1,9 @@
 package com.github.attebjorner.todo_app.model;
 
+import com.github.attebjorner.todo_app.util.RoomConverters;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.UUID;
 
 public class NoteDto
 {
@@ -8,7 +11,7 @@ public class NoteDto
 
     private String text;
 
-    private String priority;
+    private String importance;
 
     private boolean done;
 
@@ -19,6 +22,42 @@ public class NoteDto
 
     @SerializedName("updated_at")
     private long updatedTime;
+
+    private NoteDto(String id, String text, String importance, boolean done,
+                   long deadline, long createdTime, long updatedTime)
+    {
+        this.id = id;
+        this.text = text;
+        this.importance = importance;
+        this.done = done;
+        this.deadline = deadline;
+        this.createdTime = createdTime;
+        this.updatedTime = updatedTime;
+    }
+
+    public Note toNote()
+    {
+        Note note = new Note(
+                text, RoomConverters.toLocalDate(deadline),
+                Importance.valueOfApiString(importance)
+        );
+        note.setId(UUID.fromString(id));
+        note.setDone(done);
+        note.setCreationDate(RoomConverters.toLocalDateTime(createdTime));
+        note.setLastUpdate(RoomConverters.toLocalDateTime(updatedTime));
+        return note;
+    }
+
+    public static NoteDto fromNote(Note note)
+    {
+        return new NoteDto(
+                note.getId().toString(), note.getDescription(),
+                note.getImportance().getApiString(), note.isDone(),
+                RoomConverters.fromLocalDate(note.getDeadline()),
+                RoomConverters.fromLocalDateTime(note.getCreationDate()),
+                RoomConverters.fromLocalDateTime(note.getLastUpdate())
+        );
+    }
 
     public String getId()
     {
@@ -40,14 +79,14 @@ public class NoteDto
         this.text = text;
     }
 
-    public String getPriority()
+    public String getImportance()
     {
-        return priority;
+        return importance;
     }
 
-    public void setPriority(String priority)
+    public void setImportance(String importance)
     {
-        this.priority = priority;
+        this.importance = importance;
     }
 
     public boolean isDone()
