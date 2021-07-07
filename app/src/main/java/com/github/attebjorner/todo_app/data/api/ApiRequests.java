@@ -124,45 +124,6 @@ public class ApiRequests
         });
     }
 
-//    public void postTask(Note note)
-//    {
-//        Log.d(TAG, "started post");
-//        Call<NoteDto> call = todoApi.postTask(NoteDto.fromNote(note));
-//        call.enqueue(new Callback<NoteDto>()
-//        {
-//            @Override
-//            public void onResponse(@NonNull Call<NoteDto> call, @NonNull Response<NoteDto> response)
-//            {
-//                Log.d(TAG, "post response");
-//                if (response.isSuccessful())
-//                {
-//                    Log.d(TAG, "onResponse: post success");
-//                }
-//                else
-//                {
-//                    Log.d(TAG, "onResponse: post not success");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<NoteDto> call, @NonNull Throwable t)
-//            {
-//                Log.d(TAG, "onFailure: post");
-//                if (t instanceof HttpException)
-//                {
-//                    HttpException response = (HttpException) t;
-//                    int code = response.code();
-//                    System.out.println(code);
-//                    Log.d(TAG, "" + code);
-//                }
-//                else
-//                {
-//                    t.printStackTrace();
-//                }
-//            }
-//        });
-//    }
-
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
@@ -172,9 +133,9 @@ public class ApiRequests
                         deletedNoteRepository.getDeletedNotesIds()
                                 .stream()
                                 .map(UUID::toString)
-                                .collect(Collectors.toList())
-                ),
-                Map.of("other", new ArrayList<>())
+                                .collect(Collectors.toList()),
+                    "other", new ArrayList<>()
+                )
         );
         Response<List<NoteDto>> response = call.execute();
         if (response.isSuccessful())
@@ -185,13 +146,10 @@ public class ApiRequests
                     .map(NoteDto::toNote)
                     .collect(Collectors.toSet());
             Set<Note> undirtyNotes = noteRepository.getSetUndirtyNotes();
-//            Set<Note> dirtyNotes = noteRepository.getSetDirtyNotes();
-//            Map<UUID, Note> dirtyNotesMap = dirtyNotes.stream()
             Map<UUID, Note> dirtyNotesMap = noteRepository.getSetDirtyNotes().stream()
                     .collect(Collectors.toMap(
                             Note::getId, n -> n, (prev, next) -> next, HashMap::new
                     ));
-
             serverNotes.removeAll(undirtyNotes);
             for (Note n : serverNotes)
             {
@@ -209,7 +167,6 @@ public class ApiRequests
                     }
                     dirtyNotesMap.get(n.getId()).setDirty(false);
                     noteRepository.update(dirtyNotesMap.get(n.getId()));
-//                    dirtyNotes.remove(dirtyNotesMap.get(n.getId()));
                     dirtyNotesMap.remove(n.getId());
                 }
                 else

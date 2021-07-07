@@ -29,6 +29,5 @@ public interface TodoApi
     Call<NoteDto> deleteTask(@Path("task_id") String id);
 
     @PUT("tasks")
-    Call<List<NoteDto>> putDeletedAndOther(@Body Map<String, List<String>> deleted,
-                                           @Body Map<String, List<NoteDto>> other);
+    Call<List<NoteDto>> putDeletedAndOther(@Body Map<String, List<String>> body);
 }

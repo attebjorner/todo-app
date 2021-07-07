@@ -17,16 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.background.api.SynchronizationJobService;
+import com.github.attebjorner.todo_app.background.sync.SyncJobService;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
-import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.background.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +85,7 @@ public class MainActivity extends AppCompatActivity
 
     private void scheduleSynchronizationJob()
     {
-        ComponentName componentName = new ComponentName(this, SynchronizationJobService.class);
+        ComponentName componentName = new ComponentName(this, SyncJobService.class);
         JobInfo info = new JobInfo.Builder(1234, componentName)
                 .setPeriodic(1000 * 60 * 60 * 8)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
