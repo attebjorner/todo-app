@@ -9,6 +9,7 @@ import com.github.attebjorner.todo_app.util.RoomConverters;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(tableName = "notes")
@@ -33,6 +34,9 @@ public class Note
     @ColumnInfo(name = "last_update")
     private LocalDateTime lastUpdate;
 
+    @ColumnInfo(name = "is_dirty")
+    private boolean isDirty;
+
     public Note(String description, LocalDate deadline, Importance importance)
     {
         this.id = UUID.randomUUID();
@@ -42,6 +46,7 @@ public class Note
         this.importance = importance;
         creationDate = LocalDateTime.now();
         lastUpdate = LocalDateTime.now();
+        this.isDirty = true;
     }
 
     @NonNull
@@ -113,5 +118,43 @@ public class Note
     public void setLastUpdate(LocalDateTime lastUpdate)
     {
         this.lastUpdate = lastUpdate;
+    }
+
+    public boolean isDirty()
+    {
+        return isDirty;
+    }
+
+    public void setDirty(boolean dirty)
+    {
+        isDirty = dirty;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        Note note = (Note) o;
+        return isDone == note.isDone &&
+                isDirty == note.isDirty &&
+                id.equals(note.id) &&
+                Objects.equals(description, note.description) &&
+                Objects.equals(deadline, note.deadline) &&
+                importance == note.importance &&
+                Objects.equals(creationDate, note.creationDate) &&
+                Objects.equals(lastUpdate, note.lastUpdate);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, description, isDone, deadline, importance, creationDate, lastUpdate, isDirty);
     }
 }

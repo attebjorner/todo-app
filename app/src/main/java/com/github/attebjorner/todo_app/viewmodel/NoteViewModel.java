@@ -7,8 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.github.attebjorner.todo_app.data.repository.DeletedNoteRepository;
-import com.github.attebjorner.todo_app.data.repository.NoteRepository;
+import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepository;
+import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
@@ -60,6 +60,7 @@ public class NoteViewModel extends AndroidViewModel
 
     public static void update(Note note)
     {
+        note.setDirty(true);
         noteRepository.update(note);
     }
 

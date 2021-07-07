@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.data;
+package com.github.attebjorner.todo_app.data.database;
 
 import android.content.Context;
 
@@ -9,8 +9,8 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.github.attebjorner.todo_app.data.dao.DeletedNoteDao;
-import com.github.attebjorner.todo_app.data.dao.NoteDao;
+import com.github.attebjorner.todo_app.data.database.dao.DeletedNoteDao;
+import com.github.attebjorner.todo_app.data.database.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.DeletedNote;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.RoomConverters;

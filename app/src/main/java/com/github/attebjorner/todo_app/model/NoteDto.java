@@ -3,6 +3,7 @@ package com.github.attebjorner.todo_app.model;
 import com.github.attebjorner.todo_app.util.RoomConverters;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class NoteDto
@@ -38,13 +39,15 @@ public class NoteDto
     public Note toNote()
     {
         Note note = new Note(
-                text, RoomConverters.toLocalDate(deadline),
+                text,
+                deadline == 0 ? null : RoomConverters.toLocalDate(deadline),
                 Importance.valueOfApiString(importance)
         );
         note.setId(UUID.fromString(id));
         note.setDone(done);
         note.setCreationDate(RoomConverters.toLocalDateTime(createdTime));
         note.setLastUpdate(RoomConverters.toLocalDateTime(updatedTime));
+        note.setDirty(false);
         return note;
     }
 
@@ -53,7 +56,7 @@ public class NoteDto
         return new NoteDto(
                 note.getId().toString(), note.getDescription(),
                 note.getImportance().getApiString(), note.isDone(),
-                RoomConverters.fromLocalDate(note.getDeadline()),
+                note.getDeadline() == null ? 0 : RoomConverters.fromLocalDate(note.getDeadline()),
                 RoomConverters.fromLocalDateTime(note.getCreationDate()),
                 RoomConverters.fromLocalDateTime(note.getLastUpdate())
         );
@@ -127,5 +130,32 @@ public class NoteDto
     public void setUpdatedTime(long updatedTime)
     {
         this.updatedTime = updatedTime;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        NoteDto noteDto = (NoteDto) o;
+        return done == noteDto.done &&
+                deadline == noteDto.deadline &&
+                createdTime == noteDto.createdTime &&
+                updatedTime == noteDto.updatedTime &&
+                id.equals(noteDto.id) &&
+                Objects.equals(text, noteDto.text) &&
+                importance.equals(noteDto.importance);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, text, importance, done, deadline, createdTime, updatedTime);
     }
 }

@@ -1,6 +1,5 @@
-package com.github.attebjorner.todo_app.notification;
+package com.github.attebjorner.todo_app.background.notification;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;

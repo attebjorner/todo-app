@@ -1,12 +1,12 @@
-package com.github.attebjorner.todo_app.notification;
+package com.github.attebjorner.todo_app.view;
 
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.os.Build;
+
+import com.github.attebjorner.todo_app.data.api.ApiRequests;
+import com.github.attebjorner.todo_app.util.TinyDB;
 
 public class App extends Application
 {
@@ -15,6 +15,14 @@ public class App extends Application
     {
         super.onCreate();
         createNotificationChannel();
+
+        ApiRequests apiRequests = new ApiRequests(this);
+        TinyDB tinyDB = new TinyDB(this);
+        if (!tinyDB.getBoolean("not_first_time_lauched"))
+        {
+            apiRequests.fillDbInitTasks();
+            tinyDB.putBoolean("not_first_time_lauched", true);
+        }
     }
 
     private void createNotificationChannel()

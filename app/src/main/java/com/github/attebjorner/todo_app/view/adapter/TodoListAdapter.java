@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.adapter;
+package com.github.attebjorner.todo_app.view.adapter;
 
 import android.content.Intent;
 import android.graphics.Paint;
