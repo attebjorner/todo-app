@@ -126,14 +126,6 @@ public class ApiRequests
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
-        Map<String, List<String>> a = Map.of(
-                "deleted",
-                deletedNoteRepository.getDeletedNotesIds()
-                        .stream()
-                        .map(UUID::toString)
-                        .collect(Collectors.toList()),
-                "other", new ArrayList<>()
-        );
         Call<List<NoteDto>> call = todoApi.putDeletedAndOther(
                 Map.of(
                         "deleted",
@@ -154,13 +146,9 @@ public class ApiRequests
                     .map(NoteDto::toNote)
                     .collect(Collectors.toSet());
             Map<UUID, Note> undirtyNotesMap = noteRepository.getUndirtyNotes().stream()
-                    .collect(Collectors.toMap(
-                            Note::getId, n -> n, (prev, next) -> next, HashMap::new
-                    ));
+                    .collect(Collectors.toMap(Note::getId, n -> n, (n1, n2) -> n2));
             Map<UUID, Note> dirtyNotesMap = noteRepository.getDirtyNotes().stream()
-                    .collect(Collectors.toMap(
-                            Note::getId, n -> n, (prev, next) -> next, HashMap::new
-                    ));
+                    .collect(Collectors.toMap(Note::getId, n -> n, (n1, n2) -> n2));
             serverNotes.removeAll(undirtyNotesMap.values());
             for (Note n : serverNotes)
             {
@@ -168,7 +156,7 @@ public class ApiRequests
                 {
                     if (n.getLastUpdate().isAfter(dirtyNotesMap.get(n.getId()).getLastUpdate()))
                     {
-                        Log.d(TAG, "syncTasks: update repo");
+                        Log.d(TAG, "syncTasks: update db");
                         noteRepository.update(n);
                     }
                     else if (n.getLastUpdate().isBefore(dirtyNotesMap.get(n.getId()).getLastUpdate()))
@@ -187,7 +175,7 @@ public class ApiRequests
                 }
                 else if (!undirtyNotesMap.containsKey(n.getId()))
                 {
-                    Log.d(TAG, "syncTasks: add to repo");
+                    Log.d(TAG, "syncTasks: add to db");
                     noteRepository.insert(n);
                 }
             }
