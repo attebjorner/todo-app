@@ -82,7 +82,11 @@ public class CreateNoteFragment extends Fragment
     public void onSaveNote(View view)
     {
         note.setDescription(binding.etDescription.getText().toString());
-        note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
+        note.setDeadline(
+                binding.tvDate.getText().length() == 0
+                        ? null
+                        : LocalDate.parse(binding.tvDate.getText())
+        );
         note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
         NoteViewModel.update(note);
     }

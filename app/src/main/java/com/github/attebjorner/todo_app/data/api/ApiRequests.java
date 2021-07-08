@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import okhttp3.Interceptor;
@@ -127,6 +126,14 @@ public class ApiRequests
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
+        Map<String, List<String>> a = Map.of(
+                "deleted",
+                deletedNoteRepository.getDeletedNotesIds()
+                        .stream()
+                        .map(UUID::toString)
+                        .collect(Collectors.toList()),
+                "other", new ArrayList<>()
+        );
         Call<List<NoteDto>> call = todoApi.putDeletedAndOther(
                 Map.of(
                         "deleted",
@@ -140,28 +147,37 @@ public class ApiRequests
         Response<List<NoteDto>> response = call.execute();
         if (response.isSuccessful())
         {
+            Log.d(TAG, "syncTasks: response success");
             deletedNoteRepository.deleteAll();
             Set<Note> serverNotes = response.body()
                     .stream()
                     .map(NoteDto::toNote)
                     .collect(Collectors.toSet());
-            Set<Note> undirtyNotes = noteRepository.getSetUndirtyNotes();
-            Map<UUID, Note> dirtyNotesMap = noteRepository.getSetDirtyNotes().stream()
+            Map<UUID, Note> undirtyNotesMap = noteRepository.getUndirtyNotes().stream()
                     .collect(Collectors.toMap(
                             Note::getId, n -> n, (prev, next) -> next, HashMap::new
                     ));
-            serverNotes.removeAll(undirtyNotes);
+            Map<UUID, Note> dirtyNotesMap = noteRepository.getDirtyNotes().stream()
+                    .collect(Collectors.toMap(
+                            Note::getId, n -> n, (prev, next) -> next, HashMap::new
+                    ));
+            serverNotes.removeAll(undirtyNotesMap.values());
             for (Note n : serverNotes)
             {
                 if (dirtyNotesMap.containsKey(n.getId()))
                 {
                     if (n.getLastUpdate().isAfter(dirtyNotesMap.get(n.getId()).getLastUpdate()))
                     {
+                        Log.d(TAG, "syncTasks: update repo");
                         noteRepository.update(n);
                     }
                     else if (n.getLastUpdate().isBefore(dirtyNotesMap.get(n.getId()).getLastUpdate()))
                     {
-                        Call<NoteDto> putCall = todoApi.updateTask(n.getId().toString(), NoteDto.fromNote(n));
+                        Log.d(TAG, "syncTasks: update server");
+                        Call<NoteDto> putCall = todoApi.updateTask(
+                                n.getId().toString(),
+                                NoteDto.fromNote(dirtyNotesMap.get(n.getId()))
+                        );
                         Response<NoteDto> putResponse = putCall.execute();
                         while (!putResponse.isSuccessful()) putResponse = putCall.execute();
                     }
@@ -169,13 +185,15 @@ public class ApiRequests
                     noteRepository.update(dirtyNotesMap.get(n.getId()));
                     dirtyNotesMap.remove(n.getId());
                 }
-                else
+                else if (!undirtyNotesMap.containsKey(n.getId()))
                 {
-                    noteRepository.update(n);
+                    Log.d(TAG, "syncTasks: add to repo");
+                    noteRepository.insert(n);
                 }
             }
             for (Note n : dirtyNotesMap.values())
             {
+                Log.d(TAG, "syncTasks: add to server");
                 Call<NoteDto> postCall = todoApi.postTask(NoteDto.fromNote(n));
                 Response<NoteDto> postResponse = postCall.execute();
                 while (!postResponse.isSuccessful()) postResponse = postCall.execute();

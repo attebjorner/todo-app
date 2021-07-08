@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         View view = binding.getRoot();
         setContentView(view);
         scheduleNotificationJob();
-        scheduleSynchronizationJob();
+//        scheduleSyncJob();
 
         noteViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication())
                 .create(NoteViewModel.class);
@@ -67,32 +67,8 @@ public class MainActivity extends AppCompatActivity
         preconfigRecyclerView();
         observeVisibilityAndList();
         setDoneCounter();
-        setScrollingAnimation();
+        setUpScrollingAnimation();
         setAddNewBtn();
-    }
-
-    private void scheduleNotificationJob()
-    {
-        ComponentName componentName = new ComponentName(this, NotificationJobService.class);
-        JobInfo info = new JobInfo.Builder(123, componentName)
-                .setPeriodic(1000 * 60 * 60 * 8)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
-                .setPersisted(true)
-                .build();
-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        scheduler.schedule(info);
-    }
-
-    private void scheduleSynchronizationJob()
-    {
-        ComponentName componentName = new ComponentName(this, SyncJobService.class);
-        JobInfo info = new JobInfo.Builder(1234, componentName)
-                .setPeriodic(1000 * 60 * 60 * 8)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true)
-                .build();
-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        scheduler.schedule(info);
     }
 
     @Override
@@ -113,6 +89,30 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("isNew", true);
         startActivity(intent);
     }
+
+    private void scheduleNotificationJob()
+    {
+        ComponentName componentName = new ComponentName(this, NotificationJobService.class);
+        JobInfo info = new JobInfo.Builder(123, componentName)
+                .setPeriodic(1000 * 60 * 60 * 8)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
+                .setPersisted(true)
+                .build();
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.schedule(info);
+    }
+
+//    private void scheduleSyncJob()
+//    {
+//        ComponentName componentName = new ComponentName(this, SyncJobService.class);
+//        JobInfo info = new JobInfo.Builder(1234, componentName)
+//                .setPeriodic(1000 * 60 * 60 * 8)
+//                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+//                .setPersisted(true)
+//                .build();
+//        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+//        scheduler.schedule(info);
+//    }
 
     private void observeVisibilityAndList()
     {
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
                 binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
     }
 
-    private void setScrollingAnimation()
+    private void setUpScrollingAnimation()
     {
         binding.tvMyTasks.setOnClickListener(v -> binding.scvTodo.smoothScrollTo(0, 42));
         binding.scvTodo.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
@@ -177,7 +177,10 @@ public class MainActivity extends AppCompatActivity
 
     private void deleteNote(int pos)
     {
-        if (curNotes.get(pos).isDone()) noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        if (curNotes.get(pos).isDone())
+        {
+            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        }
         notesToDelete.add(curNotes.get(pos));
         curNotes.remove(pos);
         adapter.notifyItemRemoved(pos);

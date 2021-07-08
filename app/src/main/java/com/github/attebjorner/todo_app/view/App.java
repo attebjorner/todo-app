@@ -3,6 +3,9 @@ package com.github.attebjorner.todo_app.view;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -13,6 +16,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.github.attebjorner.todo_app.background.sync.SyncJobService;
 import com.github.attebjorner.todo_app.data.api.ApiRequests;
 import com.github.attebjorner.todo_app.util.TinyDB;
 
@@ -25,14 +29,19 @@ public class App extends Application
     {
         super.onCreate();
         createNotificationChannel();
+        scheduleSyncJob();
+    }
 
-        ApiRequests apiRequests = new ApiRequests(this);
-        TinyDB tinyDB = new TinyDB(this);
-        if (!tinyDB.getBoolean("not_first_time_lauched"))
-        {
-            apiRequests.fillDbInitTasks();
-            tinyDB.putBoolean("not_first_time_lauched", true);
-        }
+    private void scheduleSyncJob()
+    {
+        ComponentName componentName = new ComponentName(this, SyncJobService.class);
+        JobInfo info = new JobInfo.Builder(1234, componentName)
+                .setPeriodic(1000 * 60 * 60 * 8)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .build();
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.schedule(info);
     }
 
     private void createNotificationChannel()

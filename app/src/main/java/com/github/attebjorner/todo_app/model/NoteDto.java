@@ -16,7 +16,7 @@ public class NoteDto
 
     private boolean done;
 
-    private long deadline;
+    private Long deadline;
 
     @SerializedName("created_at")
     private long createdTime;
@@ -25,7 +25,7 @@ public class NoteDto
     private long updatedTime;
 
     private NoteDto(String id, String text, String importance, boolean done,
-                   long deadline, long createdTime, long updatedTime)
+                   Long deadline, long createdTime, long updatedTime)
     {
         this.id = id;
         this.text = text;
@@ -39,8 +39,7 @@ public class NoteDto
     public Note toNote()
     {
         Note note = new Note(
-                text,
-                deadline == 0 ? null : RoomConverters.toLocalDate(deadline),
+                text, RoomConverters.toLocalDate(deadline),
                 Importance.valueOfApiString(importance)
         );
         note.setId(UUID.fromString(id));
@@ -56,7 +55,7 @@ public class NoteDto
         return new NoteDto(
                 note.getId().toString(), note.getDescription(),
                 note.getImportance().getApiString(), note.isDone(),
-                note.getDeadline() == null ? 0 : RoomConverters.fromLocalDate(note.getDeadline()),
+                RoomConverters.fromLocalDate(note.getDeadline()),
                 RoomConverters.fromLocalDateTime(note.getCreationDate()),
                 RoomConverters.fromLocalDateTime(note.getLastUpdate())
         );

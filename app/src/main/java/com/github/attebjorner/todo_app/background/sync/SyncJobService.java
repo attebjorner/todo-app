@@ -50,6 +50,7 @@ public class SyncJobService extends JobService
 
     private void syncWithServer(JobParameters params)
     {
+        Log.d(TAG, "syncWithServer");
         ApiRequests apiRequests = new ApiRequests(getApplication());
         new Thread(() ->
         {

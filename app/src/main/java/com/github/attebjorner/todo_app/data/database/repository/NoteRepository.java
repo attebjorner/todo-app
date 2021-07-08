@@ -4,15 +4,12 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
-import com.github.attebjorner.todo_app.data.database.dao.NoteDao;
 import com.github.attebjorner.todo_app.data.database.NoteRoomDatabase;
+import com.github.attebjorner.todo_app.data.database.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class NoteRepository
 {
@@ -32,14 +29,14 @@ public class NoteRepository
         return notes;
     }
 
-    public Set<Note> getSetDirtyNotes()
+    public List<Note> getDirtyNotes()
     {
-        return new HashSet<>(noteDao.getDirtyNotes());
+        return noteDao.getDirtyNotes();
     }
 
-    public Set<Note> getSetUndirtyNotes()
+    public List<Note> getUndirtyNotes()
     {
-        return new HashSet<>(noteDao.getUndirtyNotes());
+        return noteDao.getUndirtyNotes();
     }
 
     public void insert(Note note)
