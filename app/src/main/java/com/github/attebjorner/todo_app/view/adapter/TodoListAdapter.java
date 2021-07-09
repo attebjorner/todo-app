@@ -1,5 +1,6 @@
 package com.github.attebjorner.todo_app.view.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.text.Html;
@@ -28,9 +29,13 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
     private static OnCheckboxClickListener checkboxClickListener;
 
-    public TodoListAdapter(List<Note> notes)
+    private static final String[] IMPORTANT_COLORS = new String[2];
+
+    public TodoListAdapter(List<Note> notes, Context context)
     {
         this.notes = notes;
+        IMPORTANT_COLORS[0] = context.getString(R.string.red_color);
+        IMPORTANT_COLORS[1] = context.getString(R.string.label_primary_color);
     }
 
     @NonNull
@@ -46,6 +51,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull TodoListAdapter.ViewHolder holder, int position)
     {
+        holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
         holder.tvDescription.setText(notes.get(position).getDescription());
         if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
         else
@@ -64,7 +70,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         }
 
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
-                notes.get(position), holder, position
+                notes.get(position).isDone(), position
         ));
         holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
         holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position)));
@@ -113,9 +119,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             tvDescription.setText(
                     Html.fromHtml(
-                            "<font color=#FF3B30>!! </font> <font color=#000000>"
-                                    + text
-                                    + "</font>"
+                            "<font color=" + IMPORTANT_COLORS[0] + ">!! </font> " +
+                            "<font color=" + IMPORTANT_COLORS[1] + ">" + text + "</font>"
                     )
             );
         }
@@ -128,41 +133,20 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
     public static class CheckboxListener implements View.OnClickListener
     {
-        private final Note note;
-
-        private final ViewHolder holder;
+        private final boolean isDone;
 
         private final int pos;
 
-        public CheckboxListener(Note note, ViewHolder holder, int pos)
+        public CheckboxListener(boolean isDone, int pos)
         {
-            this.note = note;
-            this.holder = holder;
+            this.isDone = isDone;
             this.pos = pos;
         }
 
         @Override
         public void onClick(View v)
         {
-//            note.setDone(!note.isDone());
-            if (note.isDone())
-            {
-                holder.setCheckboxDone(note);
-            }
-            else
-            {
-                if (note.getImportance() == Importance.HIGH) holder.setAsImportant(note.getDescription());
-                else holder.tvDescription.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.label_primary));
-                holder.tvDescription.setPaintFlags(
-                        holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
-                );
-                if (note.getDeadline() != null && note.getDeadline().isBefore(LocalDate.now()))
-                {
-                    holder.setAsOutdated();
-                }
-                else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
-            }
-            checkboxClickListener.onClick(note.isDone(), pos);
+            checkboxClickListener.onClick(isDone, pos);
         }
     }
 
@@ -182,7 +166,6 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
             tinyDB.putObject("editNote", note);
-//            intent.putExtra("id", note.getId());
             v.getContext().startActivity(intent);
         }
     }

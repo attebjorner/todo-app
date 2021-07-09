@@ -12,7 +12,9 @@ import com.github.attebjorner.todo_app.model.NoteDto;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,55 +76,6 @@ public class ApiRequests
         todoApi = retrofit.create(TodoApi.class);
     }
 
-    public void fillDbInitTasks()
-    {
-        Log.d(TAG, "getInitTasks: start");
-        Call<List<NoteDto>> call = todoApi.getTasks();
-        call.enqueue(new Callback<List<NoteDto>>()
-        {
-            @Override
-            public void onResponse(@NonNull Call<List<NoteDto>> call,
-                                   @NonNull Response<List<NoteDto>> response)
-            {
-                Log.d(TAG, "onResponse: get");
-                if (response.isSuccessful())
-                {
-                    List<NoteDto> notes = response.body();
-                    Log.d(TAG, "onResponse: success");
-                    for (NoteDto n : notes) noteRepository.insert(n.toNote());
-                }
-                else
-                {
-                    Log.d(TAG, "onResponse: error");
-                    System.out.println(response.errorBody());
-                    try
-                    {
-                        Log.d(TAG, response.errorBody().string());
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<NoteDto>> call, @NonNull Throwable t)
-            {
-                Log.d(TAG, "onFailure: get error");
-                if (t instanceof HttpException)
-                {
-                    HttpException response = (HttpException) t;
-                    Log.d(TAG, "onFailure: " + response.code());
-                }
-                else
-                {
-                    t.printStackTrace();
-                }
-            }
-        });
-    }
-
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
@@ -156,18 +109,14 @@ public class ApiRequests
                 {
                     if (n.getLastUpdate().isAfter(dirtyNotesMap.get(n.getId()).getLastUpdate()))
                     {
-                        Log.d(TAG, "syncTasks: update db");
                         noteRepository.update(n);
                     }
                     else if (n.getLastUpdate().isBefore(dirtyNotesMap.get(n.getId()).getLastUpdate()))
                     {
-                        Log.d(TAG, "syncTasks: update server");
-                        Call<NoteDto> putCall = todoApi.updateTask(
+                        todoApi.updateTask(
                                 n.getId().toString(),
                                 NoteDto.fromNote(dirtyNotesMap.get(n.getId()))
-                        );
-                        Response<NoteDto> putResponse = putCall.execute();
-                        while (!putResponse.isSuccessful()) putResponse = putCall.execute();
+                        ).execute();
                     }
                     dirtyNotesMap.get(n.getId()).setDirty(false);
                     noteRepository.update(dirtyNotesMap.get(n.getId()));
@@ -175,16 +124,12 @@ public class ApiRequests
                 }
                 else if (!undirtyNotesMap.containsKey(n.getId()))
                 {
-                    Log.d(TAG, "syncTasks: add to db");
                     noteRepository.insert(n);
                 }
             }
             for (Note n : dirtyNotesMap.values())
             {
-                Log.d(TAG, "syncTasks: add to server");
-                Call<NoteDto> postCall = todoApi.postTask(NoteDto.fromNote(n));
-                Response<NoteDto> postResponse = postCall.execute();
-                while (!postResponse.isSuccessful()) postResponse = postCall.execute();
+                todoApi.postTask(NoteDto.fromNote(n)).execute();
                 n.setDirty(false);
                 noteRepository.update(n);
             }

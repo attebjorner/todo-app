@@ -1,4 +1,6 @@
 <resources>
+    <string name="red_color">#FF3B30</string>
+    <string name="label_primary_color">#000000</string>
     <string name="app_name">todo-app</string>
     <string name="importance_no">Нет</string>
     <string name="importance_low">Низкий</string>
@@ -16,6 +18,4 @@
         <item>Низкий</item>
         <item>!! Высокий</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

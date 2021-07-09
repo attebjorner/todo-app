@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,8 @@ public class CreateNoteFragment extends Fragment
 
     private FragmentCreateNoteBinding binding;
 
+    private final Spanned[] SPINNER_ITEMS = new Spanned[3];
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -50,6 +54,8 @@ public class CreateNoteFragment extends Fragment
     {
         binding = FragmentCreateNoteBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
+
+        fillSpinnerItems();
 
         TinyDB tinyDB = new TinyDB(getContext());
         isNew = tinyDB.getBoolean("isNewFragment");
@@ -89,6 +95,22 @@ public class CreateNoteFragment extends Fragment
         );
         note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
         NoteViewModel.update(note);
+    }
+
+    private void fillSpinnerItems()
+    {
+        SPINNER_ITEMS[0] = Html.fromHtml(
+                "<font color=" + getString(R.string.label_primary_color) + ">"
+                        + getString(R.string.importance_no) + "</font> "
+        );
+        SPINNER_ITEMS[1] = Html.fromHtml(
+                "<font color=" + getString(R.string.label_primary_color) + ">"
+                        + getString(R.string.importance_low) + "</font> "
+        );
+        SPINNER_ITEMS[2] = Html.fromHtml(
+                "<font color=" + getString(R.string.red_color) + ">"
+                        + getString(R.string.importance_high) + "</font> "
+        );
     }
 
     private void setDatePickerDialog()
@@ -131,9 +153,8 @@ public class CreateNoteFragment extends Fragment
 
     private void setImportanceSpinner()
     {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.spinImportance, android.R.layout.simple_spinner_item
-        );
+
+        ArrayAdapter<Spanned> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, SPINNER_ITEMS);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinImportance.setAdapter(adapter);
         binding.spinImportance.setSelection(0);

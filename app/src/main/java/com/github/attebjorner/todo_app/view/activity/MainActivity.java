@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.background.sync.SyncJobService;
+import com.github.attebjorner.todo_app.view.adapter.OnCheckboxClickListener;
 import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Note;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity
         View view = binding.getRoot();
         setContentView(view);
         scheduleNotificationJob();
-//        scheduleSyncJob();
 
         noteViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication())
                 .create(NoteViewModel.class);
@@ -101,18 +101,6 @@ public class MainActivity extends AppCompatActivity
         JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
         scheduler.schedule(info);
     }
-
-//    private void scheduleSyncJob()
-//    {
-//        ComponentName componentName = new ComponentName(this, SyncJobService.class);
-//        JobInfo info = new JobInfo.Builder(1234, componentName)
-//                .setPeriodic(1000 * 60 * 60 * 8)
-//                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-//                .setPersisted(true)
-//                .build();
-//        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-//        scheduler.schedule(info);
-//    }
 
     private void observeVisibilityAndList()
     {
@@ -170,7 +158,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initRecyclerView(List<Note> notes)
     {
-        adapter = new TodoListAdapter(notes);
+        adapter = new TodoListAdapter(notes, this);
         binding.rvTodo.setAdapter(adapter);
         adapter.setCheckboxClickListener((isDone, pos) -> changeNoteState(pos, isDone));
     }
@@ -196,7 +184,7 @@ public class MainActivity extends AppCompatActivity
                     noteViewModel.getDoneCounter().getValue() + (!isDone ? 1 : -1)
             );
         }
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemChanged(pos);
     }
 
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(
