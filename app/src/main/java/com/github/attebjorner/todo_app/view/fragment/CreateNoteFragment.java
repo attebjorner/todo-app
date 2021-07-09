@@ -56,10 +56,10 @@ public class CreateNoteFragment extends Fragment
         View rootView = binding.getRoot();
 
         fillSpinnerItems();
+        setImportanceSpinner();
 
         TinyDB tinyDB = new TinyDB(getContext());
         isNew = tinyDB.getBoolean("isNewFragment");
-
         if (!isNew)
         {
             note = tinyDB.getObject("editNote", Note.class);
@@ -67,7 +67,6 @@ public class CreateNoteFragment extends Fragment
             setNoteData();
         }
 
-        setImportanceSpinner();
         setDatePickerDialog();
         setSwitchDate();
         setSaveButton();
