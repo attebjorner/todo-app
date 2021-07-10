@@ -68,8 +68,8 @@ public class CreateNoteFragment extends Fragment
         }
 
         setDatePickerDialog();
-        setSwitchDate();
-        setSaveButton();
+        setSwitchDateListener();
+        setSaveButtonListener();
 
         return rootView;
     }
@@ -125,7 +125,7 @@ public class CreateNoteFragment extends Fragment
         );
     }
 
-    private void setSwitchDate()
+    private void setSwitchDateListener()
     {
         binding.switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
@@ -138,7 +138,7 @@ public class CreateNoteFragment extends Fragment
         });
     }
 
-    private void setSaveButton()
+    private void setSaveButtonListener()
     {
         Button btnSave = (Button) getActivity().findViewById(R.id.btnSave);
         btnSave.setOnClickListener(v ->

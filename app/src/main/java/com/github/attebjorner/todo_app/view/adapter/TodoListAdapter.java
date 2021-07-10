@@ -53,11 +53,17 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     {
         holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
         holder.tvDescription.setText(notes.get(position).getDescription());
-        if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
+        if (notes.get(position).getDeadline() == null)
+        {
+            holder.tvDeadline.setVisibility(View.GONE);
+        }
         else
         {
             holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
-            if (notes.get(position).getDeadline().isBefore(LocalDate.now())) holder.setAsOutdated();
+            if (notes.get(position).getDeadline().isBefore(LocalDate.now()))
+            {
+                holder.setAsOutdated();
+            }
         }
 
         if (notes.get(position).isDone())

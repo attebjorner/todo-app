@@ -86,7 +86,7 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switchDate"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:theme="@style/DateSwitch"/>
     </RelativeLayout>
