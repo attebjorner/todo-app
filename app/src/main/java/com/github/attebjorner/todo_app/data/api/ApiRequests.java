@@ -79,7 +79,7 @@ public class ApiRequests
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
-        Call<List<NoteDto>> call = todoApi.putDeletedAndOther(
+        Response<List<NoteDto>> response = todoApi.putDeletedAndOther(
                 Map.of(
                         "deleted",
                         deletedNoteRepository.getDeletedNotesIds()
@@ -88,8 +88,7 @@ public class ApiRequests
                                 .collect(Collectors.toList()),
                     "other", new ArrayList<>()
                 )
-        );
-        Response<List<NoteDto>> response = call.execute();
+        ).execute();
         if (response.isSuccessful())
         {
             Log.d(TAG, "syncTasks: response success");

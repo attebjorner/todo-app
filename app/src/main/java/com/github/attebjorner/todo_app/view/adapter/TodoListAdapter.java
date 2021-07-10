@@ -29,13 +29,13 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
     private static OnCheckboxClickListener checkboxClickListener;
 
-    private static final String[] IMPORTANT_COLORS = new String[2];
+    private static final String[] LABEL_COLORS = new String[2];
 
     public TodoListAdapter(List<Note> notes, Context context)
     {
         this.notes = notes;
-        IMPORTANT_COLORS[0] = context.getString(R.string.red_color);
-        IMPORTANT_COLORS[1] = context.getString(R.string.label_primary_color);
+        LABEL_COLORS[0] = context.getString(R.string.red_color);
+        LABEL_COLORS[1] = context.getString(R.string.label_primary_color);
     }
 
     @NonNull
@@ -53,6 +53,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     {
         holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
         holder.tvDescription.setText(notes.get(position).getDescription());
+        holder.tvDescription.setTextColor(
+                ContextCompat.getColor(holder.itemView.getContext(), R.color.label_primary)
+        );
+        holder.tvDescription.setPaintFlags(0);
         if (notes.get(position).getDeadline() == null)
         {
             holder.tvDeadline.setVisibility(View.GONE);
@@ -125,8 +129,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             tvDescription.setText(
                     Html.fromHtml(
-                            "<font color=" + IMPORTANT_COLORS[0] + ">!! </font> " +
-                            "<font color=" + IMPORTANT_COLORS[1] + ">" + text + "</font>"
+                            "<font color=" + LABEL_COLORS[0] + ">!! </font> " +
+                            "<font color=" + LABEL_COLORS[1] + ">" + text + "</font>"
                     )
             );
         }
