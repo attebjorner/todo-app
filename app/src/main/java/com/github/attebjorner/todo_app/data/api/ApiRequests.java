@@ -9,8 +9,11 @@ import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepos
 import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.model.NoteDto;
+import com.github.attebjorner.todo_app.util.TinyDB;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -81,8 +84,7 @@ public class ApiRequests
         Log.d(TAG, "updateTasks");
         Response<List<NoteDto>> response = todoApi.putDeletedAndOther(
                 Map.of(
-                        "deleted",
-                        deletedNoteRepository.getDeletedNotesIds()
+                        "deleted", deletedNoteRepository.getDeletedNotesIds()
                                 .stream()
                                 .map(UUID::toString)
                                 .collect(Collectors.toList()),
@@ -110,7 +112,7 @@ public class ApiRequests
                     {
                         noteRepository.update(n);
                     }
-                    else if (n.getLastUpdate().isBefore(dirtyNotesMap.get(n.getId()).getLastUpdate()))
+                    else
                     {
                         todoApi.updateTask(
                                 n.getId().toString(),
@@ -124,6 +126,10 @@ public class ApiRequests
                 else if (!undirtyNotesMap.containsKey(n.getId()))
                 {
                     noteRepository.insert(n);
+                }
+                else
+                {
+                    noteRepository.update(n);
                 }
             }
             for (Note n : dirtyNotesMap.values())
