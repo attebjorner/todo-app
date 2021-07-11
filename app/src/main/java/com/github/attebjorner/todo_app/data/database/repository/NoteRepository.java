@@ -1,21 +1,23 @@
-package com.github.attebjorner.todo_app.data.repository;
+package com.github.attebjorner.todo_app.data.database.repository;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
-import com.github.attebjorner.todo_app.data.dao.NoteDao;
+import com.github.attebjorner.todo_app.data.database.NoteRoomDatabase;
+import com.github.attebjorner.todo_app.data.database.dao.NoteDao;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.util.NoteRoomDatabase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class TodoRepository
+public class NoteRepository
 {
     private final NoteDao noteDao;
+
     private final LiveData<List<Note>> notes;
 
-    public TodoRepository(Application application)
+    public NoteRepository(Application application)
     {
         NoteRoomDatabase database = NoteRoomDatabase.getDatabase(application);
         this.noteDao = database.noteDao();
@@ -27,9 +29,19 @@ public class TodoRepository
         return notes;
     }
 
+    public List<Note> getDirtyNotes()
+    {
+        return noteDao.getDirtyNotes();
+    }
+
+    public List<Note> getUndirtyNotes()
+    {
+        return noteDao.getUndirtyNotes();
+    }
+
     public void insert(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.insertNote(note));
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.insertNote(note));
     }
 
     public LiveData<Note> get(long id)
@@ -39,12 +51,13 @@ public class TodoRepository
 
     public void update(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.update(note));
+        note.setLastUpdate(LocalDateTime.now());
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.update(note));
     }
 
     public void delete(Note note)
     {
-        NoteRoomDatabase.databaseWriterExecutor.execute(() -> noteDao.delete(note));
+        NoteRoomDatabase.getDatabaseWriterExecutor().execute(() -> noteDao.delete(note));
     }
 
     public int getUndoneNotesByDate(long epochday)

@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.util;
+package com.github.attebjorner.todo_app.data.database;
 
 import android.content.Context;
 
@@ -9,20 +9,26 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.github.attebjorner.todo_app.data.dao.NoteDao;
+import com.github.attebjorner.todo_app.data.database.dao.DeletedNoteDao;
+import com.github.attebjorner.todo_app.data.database.dao.NoteDao;
+import com.github.attebjorner.todo_app.model.DeletedNote;
 import com.github.attebjorner.todo_app.model.Note;
+import com.github.attebjorner.todo_app.util.RoomConverters;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Note.class}, version = 1, exportSchema = false)
+@Database(entities = {Note.class, DeletedNote.class}, version = 1, exportSchema = false)
 @TypeConverters({RoomConverters.class})
 public abstract class NoteRoomDatabase extends RoomDatabase
 {
-    public static final int NUMBER_OF_THREADS = 4;
-    public static final String DATABASE_NAME = "todo_db";
+    private static final int NUMBER_OF_THREADS = 4;
+
+    private static final String DATABASE_NAME = "todo_db";
+
     private static volatile NoteRoomDatabase INSTANCE;
-    public static final ExecutorService databaseWriterExecutor
+
+    private static final ExecutorService databaseWriterExecutor
             = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     public static final RoomDatabase.Callback callback = new RoomDatabase.Callback()
@@ -34,7 +40,7 @@ public abstract class NoteRoomDatabase extends RoomDatabase
             databaseWriterExecutor.execute(() ->
             {
                 NoteDao noteDao = INSTANCE.noteDao();
-                noteDao.deleteAll();
+                DeletedNoteDao deletedNoteDao = INSTANCE.deletedNoteDao();
             });
         }
     };
@@ -57,4 +63,11 @@ public abstract class NoteRoomDatabase extends RoomDatabase
     }
 
     public abstract NoteDao noteDao();
+
+    public abstract DeletedNoteDao deletedNoteDao();
+
+    public static ExecutorService getDatabaseWriterExecutor()
+    {
+        return databaseWriterExecutor;
+    }
 }

@@ -13,4 +13,18 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="DateSwitch" parent="Theme.AppCompat.Light">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">#007AFF</item>
+
+        <!-- inactive thumb color -->
+        <!--        <item name="colorSwitchThumbNormal">#FFFFFF</item>-->
+
+        <!--        &lt;!&ndash; inactive track color (30% transparency) &ndash;&gt;-->
+        <!--        <item name="android:colorForeground">#0F000000</item>-->
+    </style>
+
+    <style name="DateDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue</item>
+    </style>
 </resources>

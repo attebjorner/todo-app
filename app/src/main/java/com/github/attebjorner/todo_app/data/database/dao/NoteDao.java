@@ -1,7 +1,6 @@
-package com.github.attebjorner.todo_app.data.dao;
+package com.github.attebjorner.todo_app.data.database.dao;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -11,6 +10,7 @@ import androidx.room.Update;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
+import java.util.Set;
 
 @Dao
 public interface NoteDao
@@ -23,6 +23,12 @@ public interface NoteDao
 
     @Query("SELECT * FROM notes ORDER BY notes.is_done, notes.deadline IS NULL, notes.deadline, notes.importance DESC")
     LiveData<List<Note>> getNotes();
+
+    @Query("SELECT * FROM notes WHERE notes.is_dirty == 1")
+    List<Note> getDirtyNotes();
+
+    @Query("SELECT * FROM notes WHERE notes.is_dirty == 0")
+    List<Note> getUndirtyNotes();
 
     @Query("SELECT * FROM notes WHERE notes.id == :id")
     LiveData<Note> get(long id);

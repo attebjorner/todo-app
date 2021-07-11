@@ -1,5 +1,6 @@
-package com.github.attebjorner.todo_app.adapter;
+package com.github.attebjorner.todo_app.view.adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.text.Html;
@@ -25,12 +26,20 @@ import java.util.List;
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder>
 {
     private final List<Note> notes;
+
     private static OnCheckboxClickListener checkboxClickListener;
 
+    private static final String[] HTML_LABEL_COLORS = new String[2];
 
-    public TodoListAdapter(List<Note> notes)
+    private static final int[] LABEL_COLORS = new int[2];
+
+    public TodoListAdapter(List<Note> notes, Context context)
     {
         this.notes = notes;
+        HTML_LABEL_COLORS[0] = context.getString(R.string.red_color);
+        HTML_LABEL_COLORS[1] = context.getString(R.string.label_primary_color);
+        LABEL_COLORS[0] = ContextCompat.getColor(context, R.color.label_primary);
+        LABEL_COLORS[1] = ContextCompat.getColor(context, R.color.label_tertiary);
     }
 
     @NonNull
@@ -46,28 +55,27 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull TodoListAdapter.ViewHolder holder, int position)
     {
-        holder.tvDescription.setText(notes.get(position).getDescription());
-        if (notes.get(position).getDeadline() == null) holder.tvDeadline.setVisibility(View.GONE);
-        else
-        {
-            holder.tvDeadline.setText(notes.get(position).getDeadline().toString());
-            if (notes.get(position).getDeadline().isBefore(LocalDate.now())) holder.setAsOutdated();
-        }
+        Note note = notes.get(position);
+        holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
+        holder.setDescription(note);
+        holder.setDeadline(note);
 
-        if (notes.get(position).isDone())
+        if (note.isDone())
         {
-            holder.setCheckboxDone(notes.get(position));
+            holder.setCheckboxDone(note);
         }
-        else if (notes.get(position).getImportance() == Importance.HIGH)
+        else if (note.getImportance() == Importance.HIGH)
         {
-            holder.setAsImportant(notes.get(position).getDescription());
+            holder.setAsImportant(note.getDescription());
         }
 
         holder.imbCheckbox.setOnClickListener(new CheckboxListener(
-                notes.get(position), holder, position
+                note.isDone(), position
         ));
-        holder.imbInfo.setOnClickListener(new InfoListener(notes.get(position)));
-        holder.tvDescription.setOnClickListener(new InfoListener(notes.get(position)));
+        InfoListener infoListener = new InfoListener(note);
+        holder.imbInfo.setOnClickListener(infoListener);
+        holder.tvDescription.setOnClickListener(infoListener);
+        holder.tvDeadline.setOnClickListener(infoListener);
     }
 
     @Override
@@ -84,6 +92,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public static final class ViewHolder extends RecyclerView.ViewHolder
     {
         ImageButton imbCheckbox, imbInfo;
+
         TextView tvDescription, tvDeadline;
 
         public ViewHolder(@NonNull View itemView)
@@ -95,6 +104,30 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             tvDeadline = itemView.findViewById(R.id.tvDeadline);
         }
 
+        public void setDescription(Note note)
+        {
+            tvDescription.setText(note.getDescription());
+            tvDescription.setTextColor(LABEL_COLORS[note.isDone() ? 1 : 0]);
+            tvDescription.setPaintFlags(
+                    note.isDone()
+                            ? tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
+                            : 0
+            );
+        }
+
+        public void setDeadline(Note note)
+        {
+            if (note.getDeadline() == null)
+            {
+                tvDeadline.setVisibility(View.GONE);
+            }
+            else
+            {
+                tvDeadline.setText(note.getDeadline().toString());
+                if (note.getDeadline().isBefore(LocalDate.now())) setAsOutdated();
+            }
+        }
+
         public void setCheckboxDone(Note note)
         {
             imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
@@ -102,24 +135,19 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             {
                 tvDescription.setText(note.getDescription());
             }
-            tvDescription.setTextColor(ContextCompat.getColor(tvDescription.getContext(), R.color.label_tertiary));
-            tvDescription.setPaintFlags(
-                    tvDescription.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
-            );
         }
 
         public void setAsImportant(String text)
         {
             tvDescription.setText(
                     Html.fromHtml(
-                            "<font color=#FF3B30>!! </font> <font color=#000000>"
-                                    + text
-                                    + "</font>"
+                            "<font color=" + HTML_LABEL_COLORS[0] + ">!! </font> " +
+                            "<font color=" + HTML_LABEL_COLORS[1] + ">" + text + "</font>"
                     )
             );
         }
 
-        public void setAsOutdated()
+        private void setAsOutdated()
         {
             imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked_red);
         }
@@ -127,39 +155,20 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
     public static class CheckboxListener implements View.OnClickListener
     {
-        private final Note note;
-        private final ViewHolder holder;
+        private final boolean isDone;
+
         private final int pos;
 
-        public CheckboxListener(Note note, ViewHolder holder, int pos)
+        public CheckboxListener(boolean isDone, int pos)
         {
-            this.note = note;
-            this.holder = holder;
+            this.isDone = isDone;
             this.pos = pos;
         }
 
         @Override
         public void onClick(View v)
         {
-            note.setDone(!note.isDone());
-            if (note.isDone())
-            {
-                holder.setCheckboxDone(note);
-            }
-            else
-            {
-                if (note.getImportance() == Importance.HIGH) holder.setAsImportant(note.getDescription());
-                else holder.tvDescription.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.label_primary));
-                holder.tvDescription.setPaintFlags(
-                        holder.tvDescription.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG)
-                );
-                if (note.getDeadline() != null && note.getDeadline().isBefore(LocalDate.now()))
-                {
-                    holder.setAsOutdated();
-                }
-                else holder.imbCheckbox.setBackgroundResource(R.drawable.ic_unchecked);
-            }
-            checkboxClickListener.onClick(note.isDone(), pos);
+            checkboxClickListener.onClick(isDone, pos);
         }
     }
 
@@ -179,7 +188,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
             tinyDB.putObject("editNote", note);
-//            intent.putExtra("id", note.getId());
+            tinyDB.putString("editNoteDeadline", note.getDeadline().toString());
             v.getContext().startActivity(intent);
         }
     }

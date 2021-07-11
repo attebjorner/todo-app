@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +31,18 @@ import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 public class CreateNoteFragment extends Fragment
 {
     private boolean isNew;
+
     private Note note;
+
+    private String noteDeadline;
+
     private LocalDate date;
 
+    private DatePickerDialog datePicker;
+
     private FragmentCreateNoteBinding binding;
+
+    private final Spanned[] SPINNER_ITEMS = new Spanned[3];
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -47,46 +57,22 @@ public class CreateNoteFragment extends Fragment
         binding = FragmentCreateNoteBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
 
-        TinyDB tinyDB = new TinyDB(getContext());
-
-        isNew = tinyDB.getBoolean("isNewFragment");
-        if (!isNew) note = tinyDB.getObject("editNote", Note.class);
-
+        fillSpinnerItems();
         setImportanceSpinner();
+
+        TinyDB tinyDB = new TinyDB(getContext());
+        isNew = tinyDB.getBoolean("isNewFragment");
         if (!isNew)
         {
+            note = tinyDB.getObject("editNote", Note.class);
+            noteDeadline = tinyDB.getString("editNoteDeadline");
             enableDelete();
             setNoteData();
         }
 
-        Calendar newCalendar = Calendar.getInstance();
-        DatePickerDialog datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
-                (view, year, monthOfYear, dayOfMonth) ->
-        {
-            date = LocalDate.of(year, monthOfYear + 1, dayOfMonth);
-            binding.tvDate.setText(date.toString());
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH),
-                newCalendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        binding.switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {
-            if (isChecked) datePicker.show();
-            else
-            {
-                date = null;
-                binding.tvDate.setText("");
-            }
-        });
-
-        Button btnSave = (Button) getActivity().findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(v ->
-        {
-            if (isNew) onCreateNew(v);
-            else onSaveNote(v);
-            Intent intent = new Intent(v.getContext(), MainActivity.class);
-            v.getContext().startActivity(intent);
-        });
+        setDatePickerDialog();
+        setSwitchDateListener();
+        setSaveButtonListener();
 
         return rootView;
     }
@@ -104,16 +90,73 @@ public class CreateNoteFragment extends Fragment
     public void onSaveNote(View view)
     {
         note.setDescription(binding.etDescription.getText().toString());
-        note.setDeadline((binding.tvDate.getText().length() == 0) ? null : date);
+        note.setDeadline(
+                binding.tvDate.getText().length() == 0
+                        ? null
+                        : LocalDate.parse(binding.tvDate.getText())
+        );
         note.setImportance(Importance.values()[(int) binding.spinImportance.getSelectedItemId()]);
         NoteViewModel.update(note);
     }
 
+    private void fillSpinnerItems()
+    {
+        SPINNER_ITEMS[0] = Html.fromHtml(
+                "<font color=" + getString(R.string.label_primary_color) + ">"
+                        + getString(R.string.importance_no) + "</font> "
+        );
+        SPINNER_ITEMS[1] = Html.fromHtml(
+                "<font color=" + getString(R.string.label_primary_color) + ">"
+                        + getString(R.string.importance_low) + "</font> "
+        );
+        SPINNER_ITEMS[2] = Html.fromHtml(
+                "<font color=" + getString(R.string.red_color) + ">"
+                        + getString(R.string.importance_high) + "</font> "
+        );
+    }
+
+    private void setDatePickerDialog()
+    {
+        Calendar newCalendar = Calendar.getInstance();
+        datePicker = new DatePickerDialog(getContext(), R.style.DateDialog,
+                (view, year, monthOfYear, dayOfMonth) ->
+                {
+                    date = LocalDate.of(year, monthOfYear + 1, dayOfMonth);
+                    binding.tvDate.setText(date.toString());
+                }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH),
+                newCalendar.get(Calendar.DAY_OF_MONTH)
+        );
+    }
+
+    private void setSwitchDateListener()
+    {
+        binding.switchDate.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            if (isChecked) datePicker.show();
+            else
+            {
+                date = null;
+                binding.tvDate.setText("");
+            }
+        });
+    }
+
+    private void setSaveButtonListener()
+    {
+        Button btnSave = (Button) getActivity().findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(v ->
+        {
+            if (isNew) onCreateNew(v);
+            else onSaveNote(v);
+            Intent intent = new Intent(v.getContext(), MainActivity.class);
+            v.getContext().startActivity(intent);
+        });
+    }
+
     private void setImportanceSpinner()
     {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.spinImportance, android.R.layout.simple_spinner_item
-        );
+
+        ArrayAdapter<Spanned> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, SPINNER_ITEMS);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinImportance.setAdapter(adapter);
         binding.spinImportance.setSelection(0);
@@ -141,7 +184,7 @@ public class CreateNoteFragment extends Fragment
         binding.spinImportance.setSelection(note.getImportance().getValue());
         if (note.getDeadline() != null)
         {
-            binding.tvDate.setText(note.getDeadline().toString());
+            binding.tvDate.setText(noteDeadline);
             binding.switchDate.setChecked(true);
         }
     }

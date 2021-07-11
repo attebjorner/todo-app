@@ -17,15 +17,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.adapter.TodoListAdapter;
+import com.github.attebjorner.todo_app.background.sync.SyncJobService;
+import com.github.attebjorner.todo_app.view.adapter.OnCheckboxClickListener;
+import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.notification.NotificationJobService;
+import com.github.attebjorner.todo_app.background.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -33,37 +38,18 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 public class MainActivity extends AppCompatActivity
 {
     private ActivityMainBinding binding;
+
     private NoteViewModel noteViewModel;
 
-    private List<Note> preNotes;
     private List<Note> curNotes;
-    private final Set<Note> notesToUpdate = new HashSet<>();
+
+    private final Map<UUID, Note> notesToUpdate = new HashMap<>();
+
+    private final Set<Note> notesToDelete = new HashSet<>();
+
     private TodoListAdapter adapter;
 
     private final int[] VISIBLE_R = {R.drawable.ic_visibility, R.drawable.ic_visibility_off};
-
-//    {
-//        Note doneLongNote = new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO);
-//        doneLongNote.setDone(true);
-//        preNotes = Arrays.asList(
-//                new Note("2+-", LocalDate.of(2021, 10, 1), Importance.HIGH),
-//                new Note("2+-", LocalDate.of(2021, 10, 4), Importance.HIGH),
-//                new Note("1+-", LocalDate.of(2021, 10, 2), Importance.LOW),
-//                new Note("1+-", LocalDate.of(2021, 10, 5), Importance.LOW),
-//                new Note("0+-", LocalDate.of(2021, 10, 3), Importance.NO),
-//                new Note("0+-", LocalDate.of(2021, 10, 6), Importance.NO),
-//                new Note("2--", null, Importance.HIGH),
-//                new Note("1--", null, Importance.LOW),
-//                new Note("0--", null, Importance.NO),
-//                new Note("2--", null, Importance.HIGH),
-//                new Note("1--", null, Importance.LOW),
-//                new Note("0--", null, Importance.NO),
-//                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", null, Importance.NO),
-//                new Note("nte 3", LocalDate.now(), Importance.NO),
-//                doneLongNote,
-//                new Note("Lorem Ipsum - это текст-, часто исполь зуемый в печати и вэб-", LocalDate.of(2020, 10, 12), Importance.HIGH)
-//        );
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,57 +59,24 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        scheduleJob();
+        scheduleNotificationJob();
 
-        noteViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(NoteViewModel.class);
-//        for (Note n : preNotes)
-//        {
-//            NoteViewModel.insert(n);
-//        }
+        noteViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication())
+                .create(NoteViewModel.class);
+
         preconfigRecyclerView();
-
-        noteViewModel.getShowDone().observe(this, showDon ->
-        {
-            noteViewModel.getNotes().observe(MainActivity.this, notes ->
-            {
-                binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
-                if (showDon) curNotes = notes;
-                else curNotes = notes.stream()
-                        .filter(n -> !n.isDone())
-                        .collect(Collectors.toList());
-                initRecyclerView(curNotes);
-                noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
-            });
-        });
-
-        noteViewModel.getDoneCounter().observe(this, aLong ->
-                binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
-
-//        binding.tvDoneCounter.setOnClickListener(v -> scheduleJob());
-
-        setScrollingAnimation();
+        observeVisibilityAndList();
+        setDoneCounter();
+        setUpScrollingAnimation();
         setAddNewBtn();
     }
 
-    public void scheduleJob()
+    @Override
+    protected void onPause()
     {
-        ComponentName componentName = new ComponentName(this, NotificationJobService.class);
-        JobInfo info = new JobInfo.Builder(123, componentName)
-                .setPeriodic(1000 * 60 * 60 * 24)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
-                .setPersisted(true)
-                .build();
-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        scheduler.schedule(info);
+        super.onPause();
+        updateDatabaseData();
     }
-
-//    @Override
-//    protected void onPause()
-//    {
-//        super.onPause();
-////        for (Note n : notesToUpdate) NoteViewModel.update(n);
-////        noteViewModel.getDoneCounter().setValue(0L);
-//    }
 
     public void onClickVisibility(View view)
     {
@@ -137,7 +90,43 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void setScrollingAnimation()
+    private void scheduleNotificationJob()
+    {
+        ComponentName componentName = new ComponentName(this, NotificationJobService.class);
+        JobInfo info = new JobInfo.Builder(123, componentName)
+                .setPeriodic(1000 * 60 * 60 * 8)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
+                .setPersisted(true)
+                .build();
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        scheduler.schedule(info);
+    }
+
+    private void observeVisibilityAndList()
+    {
+        noteViewModel.getShowDone().observe(this, showDon ->
+        {
+            updateDatabaseData();
+            noteViewModel.getNotes().observe(MainActivity.this, notes ->
+            {
+                binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
+                if (showDon) curNotes = notes;
+                else curNotes = notes.stream()
+                        .filter(n -> !n.isDone())
+                        .collect(Collectors.toList());
+                initRecyclerView(curNotes);
+                noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
+            });
+        });
+    }
+
+    private void setDoneCounter()
+    {
+        noteViewModel.getDoneCounter().observe(this, aLong ->
+                binding.tvDoneCounter.setText(getString(R.string.done, aLong)));
+    }
+
+    private void setUpScrollingAnimation()
     {
         binding.tvMyTasks.setOnClickListener(v -> binding.scvTodo.smoothScrollTo(0, 42));
         binding.scvTodo.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
@@ -145,6 +134,12 @@ public class MainActivity extends AppCompatActivity
         {
             if (scrollY <= 42) binding.motionLayout.transitionToStart();
         });
+    }
+
+    private void updateDatabaseData()
+    {
+        for (Note n : notesToUpdate.values()) NoteViewModel.update(n);
+        for (Note n : notesToDelete) NoteViewModel.delete(n);
     }
 
     private void setAddNewBtn()
@@ -163,40 +158,33 @@ public class MainActivity extends AppCompatActivity
 
     private void initRecyclerView(List<Note> notes)
     {
-        adapter = new TodoListAdapter(notes);
+        adapter = new TodoListAdapter(notes, this);
         binding.rvTodo.setAdapter(adapter);
-        adapter.setCheckboxClickListener((isDone, pos) ->
-        {
-            if (isDone) setNoteDone(pos);
-            else setNoteUndone(pos);
-        });
+        adapter.setCheckboxClickListener((isDone, pos) -> changeNoteState(pos, isDone));
     }
 
     private void deleteNote(int pos)
     {
-        NoteViewModel.delete(curNotes.get(pos));
+        if (curNotes.get(pos).isDone())
+        {
+            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
+        }
+        notesToDelete.add(curNotes.get(pos));
+        curNotes.remove(pos);
         adapter.notifyItemRemoved(pos);
     }
 
-    private void setNoteUndone(int pos)
+    private void changeNoteState(int pos, boolean isDone)
     {
-        curNotes.get(pos).setDone(false);
-        NoteViewModel.update(curNotes.get(pos));
-//        notesToUpdate.remove(curNotes.get(pos));
-//        noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() - 1);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void setNoteDone(int pos)
-    {
-        if (!notesToUpdate.contains(curNotes.get(pos)))
+        if (curNotes.get(pos).isDone() == isDone)
         {
-            curNotes.get(pos).setDone(true);
-            NoteViewModel.update(curNotes.get(pos));
-//            notesToUpdate.add(curNotes.get(pos));
-//            noteViewModel.getDoneCounter().setValue(noteViewModel.getDoneCounter().getValue() + 1);
+            curNotes.get(pos).setDone(!isDone);
+            notesToUpdate.put(curNotes.get(pos).getId(), curNotes.get(pos));
+            noteViewModel.getDoneCounter().setValue(
+                    noteViewModel.getDoneCounter().getValue() + (!isDone ? 1 : -1)
+            );
         }
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemChanged(pos);
     }
 
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(
@@ -217,7 +205,7 @@ public class MainActivity extends AppCompatActivity
             switch (direction)
             {
                 case ItemTouchHelper.RIGHT:
-                    setNoteDone(viewHolder.getAdapterPosition());
+                    changeNoteState(viewHolder.getAdapterPosition(), false);
                     break;
                 case ItemTouchHelper.LEFT:
                     deleteNote(viewHolder.getAdapterPosition());
