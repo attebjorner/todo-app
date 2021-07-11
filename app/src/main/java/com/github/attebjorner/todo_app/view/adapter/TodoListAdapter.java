@@ -188,6 +188,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             Intent intent = new Intent(v.getContext(), CreateNoteActivity.class);
             intent.putExtra("isNew", false);
             tinyDB.putObject("editNote", note);
+            tinyDB.putString("editNoteDeadline", note.getDeadline().toString());
             v.getContext().startActivity(intent);
         }
     }

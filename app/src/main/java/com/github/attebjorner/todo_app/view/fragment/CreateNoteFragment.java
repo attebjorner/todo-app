@@ -34,6 +34,8 @@ public class CreateNoteFragment extends Fragment
 
     private Note note;
 
+    private String noteDeadline;
+
     private LocalDate date;
 
     private DatePickerDialog datePicker;
@@ -63,6 +65,7 @@ public class CreateNoteFragment extends Fragment
         if (!isNew)
         {
             note = tinyDB.getObject("editNote", Note.class);
+            noteDeadline = tinyDB.getString("editNoteDeadline");
             enableDelete();
             setNoteData();
         }
@@ -181,7 +184,7 @@ public class CreateNoteFragment extends Fragment
         binding.spinImportance.setSelection(note.getImportance().getValue());
         if (note.getDeadline() != null)
         {
-            binding.tvDate.setText(note.getDeadline().toString());
+            binding.tvDate.setText(noteDeadline);
             binding.switchDate.setChecked(true);
         }
     }
