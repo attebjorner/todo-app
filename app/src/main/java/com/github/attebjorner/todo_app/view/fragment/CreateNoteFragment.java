@@ -3,11 +3,6 @@ package com.github.attebjorner.todo_app.view.fragment;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -16,17 +11,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.github.attebjorner.todo_app.R;
 import com.github.attebjorner.todo_app.databinding.FragmentCreateNoteBinding;
 import com.github.attebjorner.todo_app.model.Importance;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.util.TinyDB;
 import com.github.attebjorner.todo_app.view.activity.MainActivity;
+import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 import java.time.LocalDate;
 import java.util.Calendar;
-
-import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 public class CreateNoteFragment extends Fragment
 {

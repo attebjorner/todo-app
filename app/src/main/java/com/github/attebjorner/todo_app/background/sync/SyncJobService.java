@@ -18,7 +18,7 @@ public class SyncJobService extends JobService
 {
     private static final String TAG = "SyncJobService";
 
-    private boolean jobCancelled = false;
+    private volatile boolean jobCancelled = false;
 
     @Override
     public boolean onStartJob(JobParameters params)

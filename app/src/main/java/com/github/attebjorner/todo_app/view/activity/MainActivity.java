@@ -17,12 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.attebjorner.todo_app.R;
-import com.github.attebjorner.todo_app.background.sync.SyncJobService;
-import com.github.attebjorner.todo_app.view.adapter.OnCheckboxClickListener;
-import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
+import com.github.attebjorner.todo_app.background.notification.NotificationJobService;
 import com.github.attebjorner.todo_app.databinding.ActivityMainBinding;
 import com.github.attebjorner.todo_app.model.Note;
-import com.github.attebjorner.todo_app.background.notification.NotificationJobService;
+import com.github.attebjorner.todo_app.view.adapter.TodoListAdapter;
 import com.github.attebjorner.todo_app.viewmodel.NoteViewModel;
 
 import java.util.HashMap;

@@ -7,7 +7,6 @@ import androidx.room.Query;
 import com.github.attebjorner.todo_app.model.DeletedNote;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Dao

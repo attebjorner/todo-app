@@ -10,7 +10,6 @@ import androidx.room.Update;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
-import java.util.Set;
 
 @Dao
 public interface NoteDao

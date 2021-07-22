@@ -3,21 +3,13 @@ package com.github.attebjorner.todo_app.data.api;
 import android.app.Application;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepository;
 import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.model.NoteDto;
-import com.github.attebjorner.todo_app.util.TinyDB;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,9 +20,6 @@ import java.util.stream.Collectors;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

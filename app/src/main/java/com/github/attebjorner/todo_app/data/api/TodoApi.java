@@ -4,7 +4,6 @@ import com.github.attebjorner.todo_app.model.NoteDto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
