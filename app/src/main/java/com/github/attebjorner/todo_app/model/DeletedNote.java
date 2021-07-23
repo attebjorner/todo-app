@@ -13,9 +13,9 @@ public class DeletedNote
     private long id;
 
     @ColumnInfo(name = "note_id")
-    private UUID noteId;
+    private String noteId;
 
-    public DeletedNote(UUID noteId)
+    public DeletedNote(String noteId)
     {
         this.noteId = noteId;
     }
@@ -30,12 +30,12 @@ public class DeletedNote
         this.id = id;
     }
 
-    public UUID getNoteId()
+    public String getNoteId()
     {
         return noteId;
     }
 
-    public void setNoteId(UUID noteId)
+    public void setNoteId(String noteId)
     {
         this.noteId = noteId;
     }

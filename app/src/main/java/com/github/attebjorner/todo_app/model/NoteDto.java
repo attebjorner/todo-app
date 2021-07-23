@@ -40,7 +40,7 @@ public class NoteDto
     {
         Note note = new Note(
                 text, RoomConverters.toLocalDate(deadline),
-                Importance.valueOfApiString(importance)
+                Importance.valueOf(importance.toUpperCase())
         );
         note.setId(UUID.fromString(id));
         note.setDone(done);
@@ -54,7 +54,7 @@ public class NoteDto
     {
         return new NoteDto(
                 note.getId().toString(), note.getDescription(),
-                note.getImportance().getApiString(), note.isDone(),
+                note.getImportance().name().toLowerCase(), note.isDone(),
                 RoomConverters.fromLocalDate(note.getDeadline()),
                 RoomConverters.fromLocalDateTime(note.getCreationDate()),
                 RoomConverters.fromLocalDateTime(note.getLastUpdate())

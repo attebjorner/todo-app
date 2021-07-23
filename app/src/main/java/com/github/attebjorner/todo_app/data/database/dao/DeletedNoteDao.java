@@ -19,5 +19,5 @@ public interface DeletedNoteDao
     void deleteAll();
 
     @Query("SELECT deleted_notes.note_id FROM deleted_notes")
-    List<UUID> getDeletedNotesIds();
+    List<String> getDeletedNotesIds();
 }

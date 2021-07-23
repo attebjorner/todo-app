@@ -23,7 +23,7 @@ public class DeletedNoteRepository
     public void insert(Note note)
     {
         NoteRoomDatabase.getDatabaseWriterExecutor().execute(
-                () -> deletedNoteDao.insertNoteId(new DeletedNote(note.getId()))
+                () -> deletedNoteDao.insertNoteId(new DeletedNote(note.getId().toString()))
         );
     }
 
@@ -32,7 +32,7 @@ public class DeletedNoteRepository
         NoteRoomDatabase.getDatabaseWriterExecutor().execute(deletedNoteDao::deleteAll);
     }
 
-    public List<UUID> getDeletedNotesIds()
+    public List<String> getDeletedNotesIds()
     {
         return deletedNoteDao.getDeletedNotesIds();
     }

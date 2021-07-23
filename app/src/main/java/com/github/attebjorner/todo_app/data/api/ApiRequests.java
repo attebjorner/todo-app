@@ -73,10 +73,7 @@ public class ApiRequests
         Log.d(TAG, "updateTasks");
         Response<List<NoteDto>> response = todoApi.putDeletedAndOther(
                 Map.of(
-                        "deleted", deletedNoteRepository.getDeletedNotesIds()
-                                .stream()
-                                .map(UUID::toString)
-                                .collect(Collectors.toList()),
+                        "deleted", deletedNoteRepository.getDeletedNotesIds(),
                     "other", new ArrayList<>()
                 )
         ).execute();
