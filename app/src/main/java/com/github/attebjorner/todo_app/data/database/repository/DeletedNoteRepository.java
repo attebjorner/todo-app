@@ -1,23 +1,22 @@
 package com.github.attebjorner.todo_app.data.database.repository;
 
-import android.app.Application;
-
 import com.github.attebjorner.todo_app.data.database.NoteRoomDatabase;
 import com.github.attebjorner.todo_app.data.database.dao.DeletedNoteDao;
 import com.github.attebjorner.todo_app.model.DeletedNote;
 import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
-import java.util.UUID;
+
+import javax.inject.Inject;
 
 public class DeletedNoteRepository
 {
     private final DeletedNoteDao deletedNoteDao;
 
-    public DeletedNoteRepository(Application application)
+    @Inject
+    public DeletedNoteRepository(DeletedNoteDao deletedNoteDao)
     {
-        NoteRoomDatabase database = NoteRoomDatabase.getDatabase(application);
-        this.deletedNoteDao = database.deletedNoteDao();
+        this.deletedNoteDao = deletedNoteDao;
     }
 
     public void insert(Note note)

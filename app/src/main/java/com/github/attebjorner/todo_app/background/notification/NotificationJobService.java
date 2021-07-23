@@ -14,11 +14,24 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NotificationJobService extends JobService
 {
     private static final String TAG = "NotificationJobService";
 
     private volatile boolean jobCancelled = false;
+
+    private NoteRepository noteRepository;
+
+    @Inject
+    public void setNoteRepository(NoteRepository noteRepository)
+    {
+        this.noteRepository = noteRepository;
+    }
 
     @Override
     public boolean onStartJob(JobParameters params)
@@ -30,14 +43,13 @@ public class NotificationJobService extends JobService
 
     private void doBackgroundWork(JobParameters params)
     {
-        NoteRepository repository = new NoteRepository(getApplication());
         new Thread(() ->
         {
             if (jobCancelled) return;
             LocalDate day;
             if (LocalTime.now().getHour() >= 10) day = LocalDate.now().plusDays(1);
             else day = LocalDate.now();
-            int count = repository.getUndoneNotesByDate(day.toEpochDay());
+            int count = noteRepository.getUndoneNotesByDate(day.toEpochDay());
             if (count == 0) return;
             createNotificationAlarm(count, day);
         }).start();

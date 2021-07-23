@@ -31,8 +31,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity
 {
     private ActivityMainBinding binding;
@@ -59,8 +61,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(view);
         scheduleNotificationJob();
 
-        noteViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication())
-                .create(NoteViewModel.class);
+        noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
         preconfigRecyclerView();
         observeVisibilityAndList();
@@ -108,10 +109,16 @@ public class MainActivity extends AppCompatActivity
             noteViewModel.getNotes().observe(MainActivity.this, notes ->
             {
                 binding.imbVisible.setImageResource(VISIBLE_R[showDon ? 1 : 0]);
-                if (showDon) curNotes = notes;
-                else curNotes = notes.stream()
-                        .filter(n -> !n.isDone())
-                        .collect(Collectors.toList());
+                if (showDon)
+                {
+                    curNotes = notes;
+                }
+                else
+                {
+                    curNotes = notes.stream()
+                            .filter(n -> !n.isDone())
+                            .collect(Collectors.toList());
+                }
                 initRecyclerView(curNotes);
                 noteViewModel.getDoneCounter().setValue(notes.stream().filter(Note::isDone).count());
             });
@@ -128,16 +135,25 @@ public class MainActivity extends AppCompatActivity
     {
         binding.tvMyTasks.setOnClickListener(v -> binding.scvTodo.smoothScrollTo(0, 42));
         binding.scvTodo.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY,
-                                                                            oldScrollX, oldScrollY) ->
+                                                                                 oldScrollX, oldScrollY) ->
         {
-            if (scrollY <= 42) binding.motionLayout.transitionToStart();
+            if (scrollY <= 42)
+            {
+                binding.motionLayout.transitionToStart();
+            }
         });
     }
 
     private void updateDatabaseData()
     {
-        for (Note n : notesToUpdate.values()) NoteViewModel.update(n);
-        for (Note n : notesToDelete) NoteViewModel.delete(n);
+        for (Note n : notesToUpdate.values())
+        {
+            NoteViewModel.update(n);
+        }
+        for (Note n : notesToDelete)
+        {
+            NoteViewModel.delete(n);
+        }
     }
 
     private void setAddNewBtn()

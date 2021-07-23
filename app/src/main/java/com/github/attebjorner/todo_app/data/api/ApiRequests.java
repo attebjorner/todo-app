@@ -1,6 +1,5 @@
 package com.github.attebjorner.todo_app.data.api;
 
-import android.app.Application;
 import android.util.Log;
 
 import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepository;
@@ -16,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -38,10 +39,11 @@ public class ApiRequests
 
     private final TodoApi todoApi;
 
-    public ApiRequests(Application app)
+    @Inject
+    public ApiRequests(NoteRepository noteRepository, DeletedNoteRepository deletedNoteRepository)
     {
-        noteRepository = new NoteRepository(app);
-        deletedNoteRepository = new DeletedNoteRepository(app);
+        this.noteRepository = noteRepository;
+        this.deletedNoteRepository = deletedNoteRepository;
 
         Interceptor interceptor = chain ->
         {

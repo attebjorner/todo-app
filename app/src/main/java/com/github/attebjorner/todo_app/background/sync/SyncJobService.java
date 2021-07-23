@@ -14,11 +14,24 @@ import com.github.attebjorner.todo_app.data.api.ApiRequests;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SyncJobService extends JobService
 {
     private static final String TAG = "SyncJobService";
 
     private volatile boolean jobCancelled = false;
+
+    private ApiRequests apiRequests;
+
+    @Inject
+    public void setApiRequests(ApiRequests apiRequests)
+    {
+        this.apiRequests = apiRequests;
+    }
 
     @Override
     public boolean onStartJob(JobParameters params)
@@ -51,7 +64,7 @@ public class SyncJobService extends JobService
     private void syncWithServer(JobParameters params)
     {
         Log.d(TAG, "syncWithServer");
-        ApiRequests apiRequests = new ApiRequests(getApplication());
+//        ApiRequests apiRequests = new ApiRequests(getApplication());
         new Thread(() ->
         {
             try

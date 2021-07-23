@@ -10,6 +10,9 @@ import android.os.Build;
 
 import com.github.attebjorner.todo_app.background.sync.SyncJobService;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class App extends Application
 {
     @Override
