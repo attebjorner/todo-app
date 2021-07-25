@@ -115,6 +115,7 @@ public class MainActivityTest
         onView(withId(R.id.create_note)).check(matches(isDisplayed()));
     }
 
+    @Test
     public void testIsCheckboxClickable()
     {
         fillRecyclerViewWithTestData();
