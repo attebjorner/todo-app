@@ -6,6 +6,7 @@ import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepos
 import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.model.NoteDto;
+import com.github.attebjorner.todo_app.model.PutTasksBody;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,11 +74,8 @@ public class ApiRequests
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
-        Response<List<NoteDto>> response = todoApi.putDeletedAndOther(
-                Map.of(
-                        "deleted", deletedNoteRepository.getDeletedNotesIds(),
-                    "other", new ArrayList<>()
-                )
+        Response<List<NoteDto>> response = todoApi.putTasks(
+                new PutTasksBody(deletedNoteRepository.getDeletedNotesIds(), new ArrayList<>())
         ).execute();
         if (response.isSuccessful())
         {
