@@ -1,13 +1,5 @@
 package com.github.attebjorner.todo_app.util;
 
-//import android.support.annotation.IdRes;
-//import android.support.test.espresso.PerformException;
-//import android.support.test.espresso.UiController;
-//import android.support.test.espresso.ViewAction;
-//import android.support.test.espresso.matcher.ViewMatchers;
-//import android.support.test.espresso.util.HumanReadables;
-//import android.support.v7.widget.RecyclerView;
-
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -24,13 +16,13 @@ import org.hamcrest.Matchers;
 public class TestUtils
 {
 
-    public static <VH extends RecyclerView.ViewHolder>
-    ViewAction actionOnItemViewAtPosition(int position, @IdRes int viewId, ViewAction viewAction)
+    public static ViewAction actionOnItemViewAtPosition(int position, @IdRes int viewId,
+                                                        ViewAction viewAction)
     {
         return new ActionOnItemViewAtPositionViewAction(position, viewId, viewAction);
     }
 
-    private static final class ActionOnItemViewAtPositionViewAction<VH extends RecyclerView.ViewHolder> implements ViewAction
+    private static final class ActionOnItemViewAtPositionViewAction implements ViewAction
     {
         private final int position;
         private final ViewAction viewAction;
