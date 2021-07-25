@@ -1,4 +1,4 @@
-package com.github.attebjorner.todo_app.view;
+package com.github.attebjorner.todo_app;
 
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -6,22 +6,13 @@ import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.os.Build;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-
 import com.github.attebjorner.todo_app.background.sync.SyncJobService;
-import com.github.attebjorner.todo_app.data.api.ApiRequests;
-import com.github.attebjorner.todo_app.util.TinyDB;
 
-import java.util.Observable;
+import dagger.hilt.android.HiltAndroidApp;
 
+@HiltAndroidApp
 public class App extends Application
 {
     @Override

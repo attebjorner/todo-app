@@ -1,23 +1,15 @@
 package com.github.attebjorner.todo_app.data.api;
 
-import android.app.Application;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepository;
 import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
 import com.github.attebjorner.todo_app.model.Note;
 import com.github.attebjorner.todo_app.model.NoteDto;
-import com.github.attebjorner.todo_app.util.TinyDB;
+import com.github.attebjorner.todo_app.model.PutTasksBody;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,12 +17,11 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -49,10 +40,11 @@ public class ApiRequests
 
     private final TodoApi todoApi;
 
-    public ApiRequests(Application app)
+    @Inject
+    public ApiRequests(NoteRepository noteRepository, DeletedNoteRepository deletedNoteRepository)
     {
-        noteRepository = new NoteRepository(app);
-        deletedNoteRepository = new DeletedNoteRepository(app);
+        this.noteRepository = noteRepository;
+        this.deletedNoteRepository = deletedNoteRepository;
 
         Interceptor interceptor = chain ->
         {
@@ -82,14 +74,8 @@ public class ApiRequests
     public void syncTasks() throws IOException
     {
         Log.d(TAG, "updateTasks");
-        Response<List<NoteDto>> response = todoApi.putDeletedAndOther(
-                Map.of(
-                        "deleted", deletedNoteRepository.getDeletedNotesIds()
-                                .stream()
-                                .map(UUID::toString)
-                                .collect(Collectors.toList()),
-                    "other", new ArrayList<>()
-                )
+        Response<List<NoteDto>> response = todoApi.putTasks(
+                new PutTasksBody(deletedNoteRepository.getDeletedNotesIds(), new ArrayList<>())
         ).execute();
         if (response.isSuccessful())
         {

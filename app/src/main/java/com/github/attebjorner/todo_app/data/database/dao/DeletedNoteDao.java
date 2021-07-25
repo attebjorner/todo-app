@@ -7,7 +7,6 @@ import androidx.room.Query;
 import com.github.attebjorner.todo_app.model.DeletedNote;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Dao
@@ -20,5 +19,5 @@ public interface DeletedNoteDao
     void deleteAll();
 
     @Query("SELECT deleted_notes.note_id FROM deleted_notes")
-    List<UUID> getDeletedNotesIds();
+    List<String> getDeletedNotesIds();
 }

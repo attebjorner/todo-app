@@ -5,8 +5,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.github.attebjorner.todo_app.util.RoomConverters;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/back_primary"
     android:orientation="vertical"
+    android:id="@+id/create_note"
     tools:context=".view.activity.CreateNoteActivity">
 
     <RelativeLayout
@@ -29,7 +30,6 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:textColor="@color/blue"
-
             android:fontFamily="@font/roboto_medium"
             android:textSize="14sp"
             android:text="@string/save" />

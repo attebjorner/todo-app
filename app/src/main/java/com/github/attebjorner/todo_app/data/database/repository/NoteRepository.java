@@ -1,7 +1,5 @@
 package com.github.attebjorner.todo_app.data.database.repository;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 
 import com.github.attebjorner.todo_app.data.database.NoteRoomDatabase;
@@ -11,16 +9,18 @@ import com.github.attebjorner.todo_app.model.Note;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class NoteRepository
 {
     private final NoteDao noteDao;
 
     private final LiveData<List<Note>> notes;
 
-    public NoteRepository(Application application)
+    @Inject
+    public NoteRepository(NoteDao noteDao)
     {
-        NoteRoomDatabase database = NoteRoomDatabase.getDatabase(application);
-        this.noteDao = database.noteDao();
+        this.noteDao = noteDao;
         this.notes = noteDao.getNotes();
     }
 

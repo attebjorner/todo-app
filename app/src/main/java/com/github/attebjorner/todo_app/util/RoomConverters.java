@@ -4,12 +4,10 @@ import androidx.room.TypeConverter;
 
 import com.github.attebjorner.todo_app.model.Importance;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.TimeZone;
 import java.util.UUID;
 
 public class RoomConverters

@@ -1,10 +1,10 @@
 package com.github.attebjorner.todo_app.data.api;
 
 import com.github.attebjorner.todo_app.model.NoteDto;
+import com.github.attebjorner.todo_app.model.PutTasksBody;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -29,5 +29,5 @@ public interface TodoApi
     Call<NoteDto> deleteTask(@Path("task_id") String id);
 
     @PUT("tasks")
-    Call<List<NoteDto>> putDeletedAndOther(@Body Map<String, List<String>> body);
+    Call<List<NoteDto>> putTasks(@Body PutTasksBody body);
 }

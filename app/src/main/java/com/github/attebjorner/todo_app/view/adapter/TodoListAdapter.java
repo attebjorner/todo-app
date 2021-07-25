@@ -64,7 +64,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         {
             holder.setCheckboxDone(note);
         }
-        else if (note.getImportance() == Importance.HIGH)
+        else if (note.getImportance() == Importance.IMPORTANT)
         {
             holder.setAsImportant(note.getDescription());
         }
@@ -131,7 +131,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         public void setCheckboxDone(Note note)
         {
             imbCheckbox.setBackgroundResource(R.drawable.ic_checked);
-            if (note.getImportance() == Importance.HIGH)
+            if (note.getImportance() == Importance.IMPORTANT)
             {
                 tvDescription.setText(note.getDescription());
             }

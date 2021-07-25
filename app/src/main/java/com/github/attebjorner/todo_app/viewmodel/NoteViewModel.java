@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.github.attebjorner.todo_app.data.database.repository.DeletedNoteRepository;
 import com.github.attebjorner.todo_app.data.database.repository.NoteRepository;
@@ -13,7 +14,12 @@ import com.github.attebjorner.todo_app.model.Note;
 
 import java.util.List;
 
-public class NoteViewModel extends AndroidViewModel
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
+public class NoteViewModel extends ViewModel
 {
     private static NoteRepository noteRepository;
 
@@ -25,12 +31,12 @@ public class NoteViewModel extends AndroidViewModel
 
     private final MutableLiveData<Long> doneCounter = new MutableLiveData<>(0L);
 
-    public NoteViewModel(@NonNull Application application)
+    @Inject
+    public NoteViewModel(NoteRepository noteRepo, DeletedNoteRepository deletedNoteRepo)
     {
-        super(application);
-        noteRepository = new NoteRepository(application);
+        noteRepository = noteRepo;
+        deletedNoteRepository = deletedNoteRepo;
         notes = noteRepository.getAllNotes();
-        deletedNoteRepository = new DeletedNoteRepository(application);
     }
 
     public LiveData<List<Note>> getNotes()
